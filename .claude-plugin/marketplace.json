@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "monash-automation",
+  "description": "Claude Code plugins shared within Monash Automation.",
+  "owner": { "name": "Sam Roberts" },
+  "plugins": [
+    {
+      "name": "ma-study",
+      "description": "Build week-by-week exam notes for a Monash unit from Moodle and the slides, then quiz yourself on them in an interactive Study Hub.",
+      "version": "1.0.0",
+      "author": { "name": "Sam Roberts" },
+      "category": "productivity",
+      "source": "./"
+    }
+  ]
+}

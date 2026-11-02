@@ -1,0 +1,43 @@
+---
+name: ma-study
+description: "Entry point for the ma-study set, Monash Automation's exam-study skills for Claude Code. Explains the set and routes to the right one: ma-study-notes builds week-by-week notes for a Monash unit from Moodle and the slides, and ma-study-quiz quizzes you from those notes on an interactive page with rendered equations. Use when someone types /ma-study, asks for help studying for a Monash unit, or asks what study skills they have."
+---
+
+# ma-study
+
+Exam-study skills shared within Monash Automation (MA). Made by Sam Roberts with Claude.
+
+| Skill | What it does | Use when |
+|---|---|---|
+| `ma-study-notes` | Reads the unit's Moodle page, slides, worksheets and (optionally) Ed threads, and writes one notes file per week plus an index README | Starting revision for a unit, or adding new weeks |
+| `ma-study-quiz` | Builds a quiz page from those notes: multiple-choice and numeric questions taken from the slides, rendered maths, instant feedback, and a list of misses | "Quiz me on weeks X–Y" |
+
+Assume the student is new to Claude Code. Use plain words ("the browser panel on the right", not "the browser pane" or tool names), and give them one thing to do at a time.
+
+## 0. Check where you are (every time, before anything else)
+These skills need the **Code** tab of the Claude desktop app: it has the built-in browser, local files and helper agents. If the built-in browser tools (`mcp__Claude_Browser__*`) aren't available, stop and say only:
+
+> These study skills only work in the **Code** tab of the Claude desktop app (the Chat tab can't open Moodle or save notes). Open the desktop app, click **Code** at the top, choose a folder called `University` in your home folder (make it if it doesn't exist), and ask me again there.
+
+## Study folder
+Every ma-study skill uses the same **study folder**:
+- `~/University/` if it exists;
+- otherwise the folder this session was opened in. Don't write outside it, since that triggers extra approval prompts and the files won't open in the app.
+
+A unit's notes live in `<study folder>/<UNIT>/StudyKB/`.
+
+## Route
+- No notes for the unit yet (`<study folder>/<UNIT>/StudyKB/README.md` is missing): run **ma-study-notes**.
+- Notes exist, but the unit has newer weeks on Moodle and they want those: run **ma-study-notes** (it adds only the missing weeks).
+- Notes exist and they want practice: run **ma-study-quiz**.
+- Unsure: say in two lines what each does and ask which one (lettered options, so they can answer "a" or "b").
+
+## Setup for a new user (tell them only the steps they haven't done)
+1. **Get the desktop app** and open the **Code** tab. When it asks for a folder, make a folder called `University` in your home folder and choose it. Use the same folder every time.
+2. **Install the plugin:** in that Code session, paste the link you were sent (or, if you downloaded a zip, say where it is) and type: *"Install the ma-study plugin from this."* Then start a new session so it loads.
+   (Doing it for them: the source is a GitHub repo (`owner/repo` or URL) or a local folder; unzip a zip into its own new folder under `~/.claude/` first, never the scratchpad, since the marketplace stays pointed at it. Run `claude plugin marketplace add <source>`, then `claude plugin install ma-study@monash-automation`, check `claude plugin list` shows it, and tell them to start a new session. Updates later: `claude plugin marketplace update monash-automation`. If they already have the three folders in `~/.claude/skills/`, remove those first so the skills aren't loaded twice.)
+3. **Connect Google Drive:** in the app, open **Settings → Connectors**, add **Google Drive**, and sign in with your Monash Google account. Unit slides live on Drive.
+4. **Expect approval prompts.** Claude will ask before reading web pages, saving files or running small commands. Approving them is safe; it only reads Moodle, Drive and Ed and saves notes into your study folder. You can choose "always allow" to see fewer prompts.
+5. When asked, sign in to Moodle in the browser panel Claude opens. That's the only manual step.
+
+Optional: an Eunomia memory server. If it's connected, the notes are mirrored there and Ed threads are searched through it. Without it, everything stays in local files. Don't mention Eunomia to students who don't have it.

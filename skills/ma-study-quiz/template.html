@@ -1,0 +1,1165 @@
+<meta charset="utf-8">
+<title>Study Hub</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link id="fontlink" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Figtree:wght@400..800&display=swap">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  startup: { typeset: false }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+<script>
+/* Themes: each preset is a colour family plus a type pairing. Every colour is derived in CSS from a few hues,
+   so a preset is just numbers. Applied before first paint from localStorage; the db copy syncs devices. */
+window.PRESETS = [
+  { id: 'peach', name: 'Peach & Ink', ha: 275, ca: .2, hb: 55, cb: .03, uc: .1, display: 'Bricolage Grotesque', body: 'Figtree',
+    fonts: 'family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Figtree:wght@400..800', units: [30, 190, 85, 320, 145] },
+  { id: 'lagoon', name: 'Lagoon', ha: 205, ca: .14, hb: 215, cb: .025, uc: .09, display: 'Unbounded', body: 'DM Sans',
+    fonts: 'family=Unbounded:wght@400..800&family=DM+Sans:opsz,wght@9..40,400..700', units: [195, 155, 255, 45, 300] },
+  { id: 'grape', name: 'Grape Soda', ha: 305, ca: .22, hb: 115, cb: .035, uc: .11, display: 'Syne', body: 'Manrope',
+    fonts: 'family=Syne:wght@400..800&family=Manrope:wght@400..800', units: [305, 125, 350, 215, 65] },
+  { id: 'macaron', name: 'Macaron', ha: 355, ca: .15, hb: 35, cb: .018, uc: .06, display: 'Fraunces', body: 'Work Sans',
+    fonts: 'family=Fraunces:opsz,wght@9..144,400..800&family=Work+Sans:wght@400..700', units: [20, 145, 95, 240, 305] },
+  { id: 'matcha', name: 'Matcha', ha: 255, ca: .16, hb: 130, cb: .028, uc: .09, display: 'Instrument Serif', body: 'Figtree',
+    fonts: 'family=Instrument+Serif:ital@0;1&family=Figtree:wght@400..800', units: [130, 255, 70, 20, 190] },
+  { id: 'hall', name: 'Exam hall', ha: 262, ca: .16, hb: 250, cb: .01, uc: .08, display: 'Atkinson Hyperlegible Next', body: 'Atkinson Hyperlegible Next',
+    fonts: 'family=Atkinson+Hyperlegible+Next:wght@400..800', units: [262, 150, 30, 75, 300] }
+];
+window.HUES = [20, 45, 70, 95, 130, 155, 190, 215, 250, 280, 305, 340];
+window.applyTheme = function (p) {
+  p = p || {};
+  const P = PRESETS.find(x => x.id === p.preset) || PRESETS[0], r = document.documentElement, s = r.style;
+  s.setProperty('--ha', P.ha); s.setProperty('--ca', P.ca); s.setProperty('--hb', P.hb); s.setProperty('--cb', P.cb); s.setProperty('--uc', P.uc);
+  s.setProperty('--display', `"${P.display}", ui-sans-serif, system-ui, sans-serif`);
+  s.setProperty('--body', `"${P.body}", ui-sans-serif, system-ui, sans-serif`);
+  r.dataset.preset = P.id;
+  if (p.mode === 'light' || p.mode === 'dark') r.dataset.theme = p.mode; else delete r.dataset.theme;
+  const l = document.getElementById('fontlink'), href = `https://fonts.googleapis.com/css2?${P.fonts}&display=swap`;
+  if (l && l.getAttribute('href') !== href) l.setAttribute('href', href);
+};
+try { applyTheme(JSON.parse(localStorage.getItem('hub:prefs') || 'null')); } catch (e) { applyTheme(null); }
+</script>
+<style>
+:root {
+  --ha: 275; --ca: .2; --hb: 55; --cb: .03; --uc: .1;
+  --display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif; --body: "Figtree", ui-sans-serif, system-ui, sans-serif;
+  --bg: oklch(96.5% var(--cb) var(--hb)); --surface: oklch(99.4% calc(var(--cb) * .35) var(--hb)); --sunk: oklch(93% calc(var(--cb) * 1.1) var(--hb));
+  --ink: oklch(21% .025 var(--ha)); --ink-2: oklch(40% .025 var(--ha)); --ink-3: oklch(52% .02 var(--ha));
+  --line: oklch(89% .02 var(--hb)); --line-2: oklch(79% .025 var(--hb));
+  --acc: oklch(48% var(--ca) var(--ha)); --acc-hover: oklch(41% var(--ca) var(--ha)); --on-acc: #fff; --acc-soft: oklch(94% .045 var(--ha)); --acc-ink: oklch(44% var(--ca) var(--ha));
+  --u-tint-l: 88%; --u-deep-l: 34%; --u-ink-l: 24%;
+  --good: oklch(50% .13 150); --good-soft: oklch(94% .05 150); --bad: oklch(52% .19 27); --bad-soft: oklch(94% .04 27); --shaky: oklch(60% .15 62); --shaky-soft: oklch(95% .05 75);
+  --untried: oklch(84% .01 var(--hb));
+  --r: 14px; --r-sm: 9px; --shadow: 0 1px 2px oklch(20% .03 var(--hb) / .06), 0 8px 24px -12px oklch(20% .05 var(--hb) / .18);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: oklch(16.5% calc(var(--cb) * .9) var(--hb)); --surface: oklch(20.5% calc(var(--cb) * .9) var(--hb)); --sunk: oklch(14% calc(var(--cb) * .8) var(--hb));
+  --ink: oklch(95% .01 var(--ha)); --ink-2: oklch(79% .02 var(--ha)); --ink-3: oklch(67% .02 var(--ha));
+  --line: oklch(29% .02 var(--hb)); --line-2: oklch(39% .025 var(--hb));
+  --acc: oklch(76% calc(var(--ca) * .75) var(--ha)); --acc-hover: oklch(83% calc(var(--ca) * .6) var(--ha)); --on-acc: oklch(18% .04 var(--ha)); --acc-soft: oklch(29% .07 var(--ha)); --acc-ink: oklch(80% calc(var(--ca) * .7) var(--ha));
+  --u-tint-l: 33%; --u-deep-l: 85%; --u-ink-l: 94%;
+  --good: oklch(77% .14 150); --good-soft: oklch(27% .05 150); --bad: oklch(72% .15 25); --bad-soft: oklch(28% .06 27); --shaky: oklch(80% .13 70); --shaky-soft: oklch(29% .05 70);
+  --untried: oklch(36% .015 var(--hb));
+  --shadow: 0 1px 2px #0004, 0 10px 28px -14px #000a;
+  color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: oklch(16.5% calc(var(--cb) * .9) var(--hb)); --surface: oklch(20.5% calc(var(--cb) * .9) var(--hb)); --sunk: oklch(14% calc(var(--cb) * .8) var(--hb));
+  --ink: oklch(95% .01 var(--ha)); --ink-2: oklch(79% .02 var(--ha)); --ink-3: oklch(67% .02 var(--ha));
+  --line: oklch(29% .02 var(--hb)); --line-2: oklch(39% .025 var(--hb));
+  --acc: oklch(76% calc(var(--ca) * .75) var(--ha)); --acc-hover: oklch(83% calc(var(--ca) * .6) var(--ha)); --on-acc: oklch(18% .04 var(--ha)); --acc-soft: oklch(29% .07 var(--ha)); --acc-ink: oklch(80% calc(var(--ca) * .7) var(--ha));
+  --u-tint-l: 33%; --u-deep-l: 85%; --u-ink-l: 94%;
+  --good: oklch(77% .14 150); --good-soft: oklch(27% .05 150); --bad: oklch(72% .15 25); --bad-soft: oklch(28% .06 27); --shaky: oklch(80% .13 70); --shaky-soft: oklch(29% .05 70);
+  --untried: oklch(36% .015 var(--hb));
+  --shadow: 0 1px 2px #0004, 0 10px 28px -14px #000a;
+  color-scheme: dark }
+/* a unit's own colour: any element with the .u class and --uh set */
+.u { --u-tint: oklch(var(--u-tint-l) var(--uc) var(--uh)); --u-deep: oklch(var(--u-deep-l) calc(var(--uc) * 1.3) var(--uh)); --u-ink: oklch(var(--u-ink-l) .03 var(--uh)); --u-dot: oklch(64% .16 var(--uh)); }
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 16px; line-height: 1.55; accent-color: var(--acc); }
+::selection { background: var(--acc-soft); color: var(--ink); }
+a { color: var(--acc-ink); text-underline-offset: .2em; text-decoration-thickness: 1px; }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; }
+h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; font-family: var(--display); font-weight: 700; letter-spacing: -.01em; }
+[data-preset="matcha"] h1, [data-preset="matcha"] h2 { font-weight: 400; letter-spacing: 0; }
+[data-preset="lagoon"] h1 { letter-spacing: -.03em; }
+.n { font-variant-numeric: tabular-nums; }
+.ic { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.muted { color: var(--ink-2); }
+.empty { color: var(--ink-2); margin: 0; }
+
+/* ---- app bar ---- */
+.top { position: sticky; top: 0; z-index: 20; background: color-mix(in oklab, var(--bg) 86%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+.top .wrap { display: flex; align-items: center; gap: 12px; min-height: 60px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; font-family: var(--display); font-weight: 700; font-size: 1.125rem; letter-spacing: -.01em; }
+.logo { width: 30px; height: 30px; flex: none; }
+.crumb { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); text-decoration: none; font-weight: 600; font-size: .9375rem; padding: 6px 12px 6px 6px; border-radius: 999px; }
+.crumb:hover { background: var(--sunk); color: var(--ink); }
+.top .sp { flex: 1; }
+.pal-btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 600; font-size: .875rem; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 8px; cursor: pointer; box-shadow: var(--shadow); min-height: 36px; }
+.pal-btn:hover { border-color: var(--line-2); }
+.pal-btn .dots { display: inline-flex; }
+.pal-btn .dots i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--surface); margin-left: -5px; }
+.pal-btn .dots i:first-child { margin-left: 0; }
+
+/* ---- buttons ---- */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 20px; border-radius: 999px; font: inherit; font-weight: 700; font-size: .9375rem;
+  text-decoration: none; cursor: pointer; border: 1.5px solid var(--acc); background: var(--acc); color: var(--on-acc); transition: background-color .15s ease-out, border-color .15s ease-out, transform .15s ease-out; }
+.btn:hover { background: var(--acc-hover); border-color: var(--acc-hover); color: var(--on-acc); }
+.btn:active { transform: translateY(1px); }
+.btn.out { background: var(--surface); color: var(--acc-ink); border-color: var(--line-2); }
+.btn.out:hover { border-color: var(--acc); background: var(--acc-soft); color: var(--acc-ink); }
+.btn.sm { min-height: 36px; padding: 0 14px; font-size: .875rem; }
+.btn:disabled { background: transparent; color: var(--ink-3); border-color: var(--line); cursor: default; transform: none; }
+.badge { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: var(--acc); color: var(--on-acc); font-size: .75rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+/* ---- home ---- */
+.home { display: flex; flex-direction: column; gap: 36px; padding-top: 18px; padding-bottom: 64px; }
+.hello .eyebrow { margin: 0 0 6px; color: var(--ink-3); font-weight: 700; font-size: .8125rem; letter-spacing: .06em; text-transform: uppercase; }
+.hello h1 { font-size: clamp(2.25rem, 6vw, 3.5rem); }
+.hero { position: relative; overflow: hidden; display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 24px; padding: 28px; border-radius: 26px; background: var(--u-tint); color: var(--u-ink); }
+.hero::before { content: ""; position: absolute; width: 340px; height: 340px; right: -90px; top: -150px; border-radius: 50%; background: var(--u-dot); opacity: .2; pointer-events: none; }
+.hero::after { content: ""; position: absolute; width: 180px; height: 180px; right: 140px; bottom: -120px; border-radius: 42% 58% 50% 50%; background: var(--acc); opacity: .16; pointer-events: none; }
+.hero > * { position: relative; }
+.hero .k { font-weight: 800; font-size: .8125rem; letter-spacing: .07em; text-transform: uppercase; color: var(--u-deep); margin: 0; }
+.hero .big { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 4px; flex-wrap: wrap; }
+.hero .big b { font-family: var(--display); font-size: clamp(4rem, 12vw, 6.5rem); line-height: .9; font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+[data-preset="matcha"] .hero .big b { font-weight: 400; letter-spacing: -.02em; }
+.hero .big span { font-family: var(--display); font-size: 1.375rem; font-weight: 600; }
+.hero .when { margin: 0; font-weight: 500; }
+.hero .side { display: flex; flex-direction: column; gap: 12px; justify-content: center; }
+.hero .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+.cont { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: var(--r); background: var(--surface); color: var(--ink); text-decoration: none; box-shadow: var(--shadow); }
+.cont:hover { box-shadow: 0 0 0 2px var(--acc), var(--shadow); }
+.cont small { display: block; color: var(--ink-3); font-weight: 700; font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; }
+.cont b { display: block; font-weight: 700; line-height: 1.3; }
+.cont .ic { margin-left: auto; color: var(--acc-ink); }
+.ring { flex: none; width: 42px; height: 42px; }
+.ring circle { fill: none; stroke-width: 5; }
+.ring .bgc { stroke: var(--sunk); } .ring .fg { stroke: var(--acc); stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; }
+.sec-h { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+.sec-h h2 { font-size: 1.5rem; }
+.sec-h .muted { font-size: .9375rem; }
+.units { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: 16px; }
+.ucard { display: flex; flex-direction: column; border-radius: 22px; overflow: hidden; background: var(--surface); color: var(--ink); text-decoration: none; box-shadow: var(--shadow);
+  border: 1px solid var(--line); transition: transform .2s cubic-bezier(.2,.8,.2,1), box-shadow .2s ease-out; }
+.ucard:hover { transform: translateY(-3px); color: var(--ink); }
+.ucard .face { position: relative; overflow: hidden; background: var(--u-tint); color: var(--u-ink); padding: 18px 20px 20px; min-height: 132px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px; }
+.ucard .face::after { content: ""; position: absolute; right: -36px; bottom: -56px; width: 150px; height: 150px; border-radius: 50%; border: 22px solid var(--u-dot); opacity: .28; }
+.ucard .code { font-family: var(--display); font-weight: 800; font-size: 2rem; line-height: 1; letter-spacing: -.02em; position: relative; z-index: 1; }
+[data-preset="matcha"] .ucard .code { font-weight: 400; font-size: 2.375rem; }
+.ucard .name { font-weight: 700; margin-top: 6px; position: relative; z-index: 1; line-height: 1.3; }
+.chip { display: inline-flex; align-items: center; gap: 6px; width: fit-content; padding: 3px 10px; border-radius: 999px; font-size: .8125rem; font-weight: 700; background: var(--surface); color: var(--ink); position: relative; z-index: 1; }
+.chip .ic { width: 14px; height: 14px; }
+.ucard .info { padding: 14px 20px 16px; display: flex; flex-direction: column; gap: 10px; }
+.ucard .meta { display: flex; justify-content: space-between; gap: 10px; color: var(--ink-2); font-size: .875rem; }
+.ucard .meta b { color: var(--ink); }
+
+/* concept heat strip: one tick per concept */
+.heat { display: flex; gap: 3px; height: 10px; min-width: 0; }
+.heat i { flex: 1; min-width: 3px; max-width: 26px; border-radius: 3px; background: var(--untried); }
+
+/* ---- unit page ---- */
+.uhead { position: relative; overflow: hidden; background: var(--u-tint); color: var(--u-ink); border-radius: 26px; padding: 26px 28px 0; margin-top: 8px; }
+.uhead::after { content: ""; position: absolute; right: -60px; top: -80px; width: 260px; height: 260px; border-radius: 50%; border: 34px solid var(--u-dot); opacity: .22; pointer-events: none; }
+.uhead > * { position: relative; z-index: 1; }
+.uhead .code { margin: 0; font-weight: 800; font-size: .8125rem; letter-spacing: .08em; color: var(--u-deep); }
+.uhead h1 { font-size: clamp(1.875rem, 5vw, 2.75rem); margin-top: 4px; }
+.uhead .row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; }
+.uhead .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+.cd { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 8px; }
+.cd b { font-family: var(--display); font-size: 2.5rem; line-height: 1; font-weight: 800; font-variant-numeric: tabular-nums; }
+[data-preset="matcha"] .cd b { font-weight: 400; }
+.cd span { font-weight: 700; }
+.cd small { width: 100%; font-size: .875rem; margin-top: 4px; }
+.tabs { display: flex; gap: 8px; margin-top: 22px; }
+.tabs a { flex: 0 1 200px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; color: var(--u-ink); text-decoration: none; font-weight: 700; padding: 12px 16px 14px;
+  border-radius: 16px 16px 0 0; background: color-mix(in oklab, var(--bg) 40%, transparent); box-shadow: inset 0 1px 0 color-mix(in oklab, var(--bg) 70%, transparent); transition: background .15s ease-out; }
+.tabs a .ic { width: 18px; height: 18px; }
+.tabs a .ct { font-size: .75rem; font-weight: 800; min-width: 22px; padding: 1px 7px; border-radius: 999px; text-align: center; background: color-mix(in oklab, var(--u-dot) 55%, transparent); font-variant-numeric: tabular-nums; }
+.tabs a:hover { background: color-mix(in oklab, var(--bg) 70%, transparent); }
+.tabs a[aria-current="page"] { background: var(--bg); color: var(--ink); box-shadow: none; }
+.tabs a[aria-current="page"] .ct { background: var(--acc); color: var(--on-acc); }
+.upage { display: flex; flex-direction: column; gap: 18px; padding-top: 22px; padding-bottom: 64px; }
+
+/* quiz list */
+.list { display: flex; flex-direction: column; gap: 12px; }
+.qrow { display: grid; grid-template-columns: 1fr auto; gap: 12px 16px; align-items: center; padding: 18px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+.qrow h3 { font-size: 1.125rem; }
+.qrow .meta { color: var(--ink-2); font-size: .875rem; margin-top: 3px; }
+.qrow .cells { grid-column: 1 / -1; }
+
+/* question cells + marks */
+.cells { display: flex; flex-wrap: wrap; gap: 4px; }
+.cell { width: 22px; height: 22px; border: 1px solid var(--line-2); border-radius: 6px; display: grid; place-items: center; background: var(--surface); color: var(--ink-3); padding: 0; }
+.cell .mk { width: 16px; height: 16px; }
+.cells.big { gap: 6px; }
+.cells.big .cell { width: 34px; height: 34px; border-radius: 10px; font: 700 .75rem var(--body); font-variant-numeric: tabular-nums; cursor: pointer; position: relative; }
+.cells.big .cell:hover { border-color: var(--acc); }
+.cells.big .cell .mk { position: absolute; inset: 4px; width: auto; height: auto; }
+.cells.big .cell.has span { visibility: hidden; }
+.cells.big .cell.cur { border: 2px solid var(--acc); color: var(--acc-ink); box-shadow: 0 0 0 3px var(--acc-soft); }
+.mk { fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.mk.ok { stroke: var(--good); } .mk.gs { stroke: var(--shaky); } .mk.no { stroke: var(--bad); } .mk.sk { stroke: var(--ink-3); stroke-width: 2.2; }
+@media (prefers-reduced-motion: no-preference) {
+  .mk.draw path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: ink .32s cubic-bezier(.2,.8,.2,1) forwards; }
+  .mk.draw path + path { animation-delay: .12s; }
+  @keyframes ink { to { stroke-dashoffset: 0; } }
+  .wk[open] .wk-b { animation: fold .22s cubic-bezier(.2,.8,.2,1); }
+  @keyframes fold { from { opacity: 0; transform: translateY(-6px); } }
+}
+
+/* progress: weeks fold shut; open one to see its concepts */
+.pv-sum { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 18px; }
+.pv-sum p { margin: 0; font-weight: 600; }
+.legend { display: flex; gap: 6px 14px; flex-wrap: wrap; font-size: .8125rem; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
+.weeks { display: flex; flex-direction: column; gap: 10px; }
+.wk { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; }
+.wk summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: auto minmax(0, 1fr) auto 20px; align-items: center; gap: 16px; padding: 16px 18px; }
+.wk summary::-webkit-details-marker { display: none; }
+.wk summary:hover { background: var(--sunk); }
+.wk .wn { font-family: var(--display); font-weight: 800; font-size: 1.125rem; min-width: 5em; line-height: 1.2; }
+[data-preset="matcha"] .wk .wn { font-weight: 400; font-size: 1.3rem; }
+.wk .wn small { display: block; font-family: var(--body); font-weight: 600; font-size: .8125rem; color: var(--ink-3); letter-spacing: 0; }
+.wk .avg { font-weight: 800; font-variant-numeric: tabular-nums; text-align: right; min-width: 3.5em; }
+.wk .avg.none { color: var(--ink-3); font-weight: 600; font-size: .875rem; }
+.wk .chev { transition: transform .2s ease-out; color: var(--ink-3); width: 20px; height: 20px; }
+.wk[open] .chev { transform: rotate(180deg); }
+.wk[open] summary { border-bottom: 1px solid var(--line); }
+.crow { display: grid; grid-template-columns: minmax(0, 1fr) 140px 3.2em; grid-template-areas: "name bar pct" "meta bar pct"; gap: 0 14px; align-items: center;
+  padding: 12px 18px; text-decoration: none; color: var(--ink); transition: background-color .15s ease-out; }
+.crow + .crow { border-top: 1px solid var(--line); }
+.crow:hover { background: var(--acc-soft); color: var(--ink); }
+.cname { grid-area: name; font-weight: 600; }
+.crow small { grid-area: meta; color: var(--ink-3); font-size: .8125rem; }
+.crow .track { grid-area: bar; height: 8px; background: var(--sunk); border-radius: 4px; overflow: hidden; }
+.crow .track i { display: block; height: 100%; border-radius: 4px; }
+.crow .pct { grid-area: pct; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; font-size: .9375rem; }
+.crow.untried .cname { color: var(--ink-2); font-weight: 500; }
+.crow.untried .pct { color: var(--ink-3); }
+
+/* ---- quiz ---- */
+.qhead { background: var(--u-tint); color: var(--u-ink); border-radius: 22px; padding: 18px 22px; display: flex; justify-content: space-between; align-items: baseline; gap: 4px 16px; flex-wrap: wrap; }
+.qhead h1 { font-size: 1.375rem; }
+.qhead .n { font-weight: 700; font-size: .875rem; }
+.qpage { display: flex; flex-direction: column; gap: 16px; padding-top: 8px; padding-bottom: 64px; max-width: 792px; }
+.sheet { background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); }
+.sheet .head { display: flex; align-items: center; gap: 12px; padding: 16px 22px; border-bottom: 1px dashed var(--line-2); min-height: 66px; }
+.sheet .qn { font-family: var(--display); font-weight: 800; font-size: 1.375rem; }
+[data-preset="matcha"] .sheet .qn { font-weight: 400; font-size: 1.6rem; }
+.sheet .wkt { font-size: .8125rem; font-weight: 700; color: var(--ink-2); background: var(--sunk); padding: 3px 10px; border-radius: 999px; }
+.sheet #mkw { margin-left: auto; display: flex; }
+.sheet #mkw .mk { width: 34px; height: 34px; }
+.body { padding: 20px 22px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.q { font-size: 1.125rem; font-weight: 600; overflow-x: auto; }
+.state { font-size: .875rem; color: var(--ink-2); margin-top: -8px; }
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt { display: flex; gap: 12px; align-items: flex-start; text-align: left; width: 100%; font: inherit; color: var(--ink); background: var(--surface);
+  border: 1.5px solid var(--line); border-radius: var(--r); padding: 12px 14px; cursor: pointer; overflow-x: auto; transition: border-color .15s ease-out, background-color .15s ease-out; }
+.opt:hover:not(:disabled) { border-color: var(--acc); background: var(--acc-soft); }
+.opt .k { display: grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 8px; background: var(--sunk); font-weight: 800; font-size: .8125rem; color: var(--ink-2); }
+.opt > span:not(.k) { flex: 1; min-width: 0; padding-top: 1px; }
+.opt .mk { width: 22px; height: 22px; margin-left: auto; align-self: center; flex: none; }
+.opt:disabled { cursor: default; color: var(--ink-2); }
+.opt.right { border-color: var(--good); background: var(--good-soft); color: var(--ink); }
+.opt.wrong { border-color: var(--bad); background: var(--bad-soft); color: var(--ink); }
+.opt.right .k { background: var(--good); color: var(--surface); } .opt.wrong .k { background: var(--bad); color: var(--surface); }
+.numf { display: flex; gap: 8px; flex-wrap: wrap; }
+.numf input { font: 600 1rem var(--body); padding: 0 14px; min-height: 44px; width: 11em; border: 1.5px solid var(--line-2); border-radius: var(--r); background: var(--surface); color: var(--ink); }
+.numf input:disabled { color: var(--ink); background: var(--sunk); }
+.numf input::placeholder { color: var(--ink-3); font-weight: 400; }
+.fb { border-top: 1px dashed var(--line-2); padding-top: 16px; display: flex; flex-direction: column; gap: 10px; overflow-x: auto; }
+.verdict { font-family: var(--display); font-weight: 800; font-size: 1.25rem; }
+[data-preset="matcha"] .verdict { font-weight: 400; font-size: 1.45rem; }
+.verdict.ok { color: var(--good); } .verdict.no { color: var(--bad); }
+.src { font-size: .8125rem; line-height: 1.5; color: var(--ink-3); }
+.sure { display: flex; gap: 8px 10px; align-items: center; flex-wrap: wrap; font-size: .9375rem; color: var(--ink-2); }
+.seg { display: inline-flex; padding: 3px; gap: 2px; background: var(--sunk); border-radius: 999px; }
+.seg button { font: inherit; font-size: .875rem; font-weight: 700; border: 0; background: transparent; color: var(--ink-2); padding: 0 14px; min-height: 32px; border-radius: 999px; cursor: pointer; }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--acc-ink); box-shadow: var(--shadow); }
+.taught { display: flex; flex-direction: column; gap: 6px; font-size: .9375rem; }
+.taught p { margin: 0; color: var(--ink-2); }
+.taught.miss p { color: var(--bad); font-weight: 600; }
+.taught a { display: inline-flex; align-items: center; gap: 8px; width: fit-content; font-weight: 600; }
+.qnav { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; border-top: 1px dashed var(--line-2); padding-top: 16px; }
+.qnav span { display: flex; gap: 8px; flex-wrap: wrap; }
+.flagbox { display: flex; flex-direction: column; gap: 8px; }
+.flagbox label { font-size: .9375rem; font-weight: 600; }
+.flagbox textarea { font: inherit; padding: 10px 12px; border: 1.5px solid var(--line-2); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); min-height: 76px; width: 100%; resize: vertical; }
+.result { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.result .big { font-family: var(--display); font-weight: 800; font-size: 3rem; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.sum { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; }
+.sum li { padding: 10px 0; border-top: 1px solid var(--line); overflow-x: auto; }
+.sum .jump { font-weight: 700; }
+.sum .taught { margin-top: 6px; font-size: .875rem; }
+.box { display: flex; flex-direction: column; gap: 10px; }
+.box h2 { font-size: 1.125rem; }
+
+/* ---- theme panel ---- */
+.pal { position: fixed; z-index: 50; top: 64px; right: max(16px, calc((100vw - 1040px) / 2 + 16px)); width: min(420px, calc(100vw - 32px)); max-height: calc(100vh - 80px); overflow: auto;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 22px; box-shadow: 0 24px 60px -20px oklch(10% .05 var(--hb) / .45); padding: 18px; display: flex; flex-direction: column; gap: 18px; }
+.pal[hidden] { display: none; }
+.pal-h { display: flex; justify-content: space-between; align-items: center; }
+.pal-h h2 { font-size: 1.25rem; }
+.x { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 0; background: var(--sunk); color: var(--ink); cursor: pointer; }
+.pal h3 { font-family: var(--body); font-size: .75rem; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-3); font-weight: 800; margin-bottom: 8px; }
+.presets { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.preset { text-align: left; font: inherit; cursor: pointer; border-radius: 14px; padding: 10px 12px; border: 2px solid transparent; display: flex; flex-direction: column; gap: 8px; }
+.preset[aria-pressed="true"] { border-color: var(--ink); }
+.preset .pn { font-size: 1.0625rem; line-height: 1.1; }
+.preset .pd { display: flex; gap: 4px; }
+.preset .pd i { width: 16px; height: 16px; border-radius: 50%; }
+.urow { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+.urow + .urow { border-top: 1px solid var(--line); }
+.urow b { min-width: 5.5em; font-size: .875rem; }
+.sw { display: flex; flex-wrap: wrap; gap: 6px; }
+.sw button { width: 24px; height: 24px; border-radius: 50%; border: 0; cursor: pointer; padding: 0; }
+.sw button[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--ink); }
+
+/* practice exams */
+.exrow .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.tag { font-size: .75rem; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: var(--sunk); color: var(--ink-2); }
+.tag.live { background: var(--acc-soft); color: var(--acc-ink); }
+.exstart { display: flex; flex-direction: column; gap: 18px; }
+.exstart .facts { display: flex; gap: 10px 28px; flex-wrap: wrap; margin: 0; }
+.exstart .facts div { display: flex; flex-direction: column; }
+.exstart .facts dt { font-size: .8125rem; color: var(--ink-2); font-weight: 600; }
+.exstart .facts dd { margin: 0; font-family: var(--display); font-size: 1.75rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+[data-preset="matcha"] .exstart .facts dd { font-weight: 400; }
+.timed { display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; }
+.timed label { font-weight: 600; }
+.timed input[type=number] { font: 600 1rem var(--body); width: 5.5em; min-height: 40px; padding: 0 10px; border: 1.5px solid var(--line-2); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); }
+.timed input:disabled { opacity: .5; }
+.sit { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); font-size: .9375rem; }
+.exbar { position: sticky; top: 8px; z-index: 5; display: flex; align-items: center; gap: 10px 14px; flex-wrap: wrap; padding: 10px 12px 10px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; box-shadow: var(--shadow); }
+.exbar .timer { display: inline-flex; align-items: center; gap: 6px; font-family: var(--display); font-weight: 800; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+[data-preset="matcha"] .exbar .timer { font-weight: 400; font-size: 1.4rem; }
+.exbar .timer.low { color: var(--bad); }
+.exbar .prog { color: var(--ink-2); font-size: .875rem; font-weight: 600; }
+.exbar .sp { flex: 1; }
+.cells.big .cell.ans { background: var(--acc-soft); color: var(--acc-ink); border-color: var(--acc); }
+.cells.big .cell.rev::after { content: ""; position: absolute; top: -4px; right: -4px; width: 10px; height: 10px; border-radius: 50%; background: var(--shaky); border: 2px solid var(--bg); }
+.opt.picked { border-color: var(--acc); background: var(--acc-soft); }
+.opt.picked .k { background: var(--acc); color: var(--on-acc); }
+.wr textarea { font: inherit; padding: 12px 14px; border: 1.5px solid var(--line-2); border-radius: var(--r); background: var(--surface); color: var(--ink); min-height: 140px; width: 100%; resize: vertical; }
+.wr textarea:disabled { background: var(--sunk); }
+.model { border-left: 3px solid var(--good); padding: 4px 0 4px 14px; overflow-x: auto; }
+.model > p:first-child { margin: 0 0 4px; font-weight: 700; color: var(--good); font-size: .875rem; }
+.rev-q { border-top: 1px solid var(--line); }
+.rev-q summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 14px 0; cursor: pointer; }
+.rev-q summary::-webkit-details-marker { display: none; }
+.rev-q summary b { font-family: var(--display); font-size: 1.125rem; }
+.rev-q .chev { transition: transform .2s ease-out; color: var(--ink-3); }
+.rev-q[open] .chev { transform: rotate(180deg); }
+.rev-q .rb { display: flex; flex-direction: column; gap: 10px; padding-bottom: 18px; overflow-x: auto; }
+.rev-q .pts { margin-left: auto; font-weight: 800; font-variant-numeric: tabular-nums; }
+.rev-q .pts.ok { color: var(--good); } .rev-q .pts.no { color: var(--bad); } .rev-q .pts.part { color: var(--shaky); }
+.yours { font-size: .9375rem; color: var(--ink-2); }
+.dlg { border: 1px solid var(--line); border-radius: 22px; background: var(--surface); color: var(--ink); padding: 22px; max-width: 420px; width: calc(100% - 32px); box-shadow: var(--shadow); }
+.dlg::backdrop { background: oklch(20% .02 var(--ha) / .45); }
+.dlg h2 { font-size: 1.25rem; margin-bottom: 8px; }
+.dlg .qnav { border: 0; padding-top: 12px; justify-content: flex-end; }
+
+/* ---- small screens ---- */
+@media (max-width: 640px) {
+  .hero { grid-template-columns: 1fr; padding: 22px 20px; gap: 18px; }
+  .uhead { padding: 20px 20px 0; }
+  .wk summary { grid-template-columns: minmax(0, 1fr) auto 20px; grid-template-areas: "wn avg chev" "heat heat heat"; row-gap: 10px; }
+  .wk .wn { grid-area: wn; } .wk .heat { grid-area: heat; } .wk .avg { grid-area: avg; } .wk .chev { grid-area: chev; }
+  .crow { grid-template-columns: minmax(0, 1fr) 3.2em; grid-template-areas: "name pct" "bar bar" "meta meta"; row-gap: 6px; }
+  .sheet .head, .body { padding-left: 16px; padding-right: 16px; }
+  .cells.big .cell { width: 31px; height: 31px; }
+  .pal-btn .lbl { display: none; }
+  .tabs { gap: 6px; } .tabs a { flex: 1 1 0; padding: 10px 6px 12px; gap: 6px; font-size: .9375rem; }
+  .tabs a .ic { display: none; }
+}
+#note { position: fixed; bottom: 12px; right: 12px; font-size: .8125rem; font-weight: 600; color: var(--bad); background: var(--surface); border: 1px solid var(--bad); border-radius: 999px; padding: 4px 12px; }
+#note[hidden] { display: none; }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4M5 4h11l-2 4 2 4H5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.5v5l4.5-2.5z"/></symbol>
+  <symbol id="i-doc" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 16h6"/></symbol>
+  <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+  <symbol id="i-bars" viewBox="0 0 24 24"><path d="M5 20V12M10 20V5M15 20v-9M20 20V8"/></symbol>
+  <symbol id="i-exam" viewBox="0 0 24 24"><path d="M7 3h10v18H7zM10 8h4M10 12h4M10 16h2"/><path d="M4 7v12M20 7v12"/></symbol>
+</svg>
+
+<div id="app"></div>
+<div id="pal" class="pal" hidden role="dialog" aria-labelledby="pal-t"></div>
+<div id="note" hidden role="status">Not saved</div>
+
+<script>
+// ---------- store ----------
+// Backend: claude db when available, else localStorage ("hub:" prefix). All collections load once into memory; writes go through.
+window.HUB_SEED = window.HUB_SEED || null; // tests may set this before the script runs
+const SEED = {};
+const CONTENT = ['concepts', 'questions', 'quizzes', 'meta', 'exams'];
+const USER = ['attempts', 'srs', 'flags', 'progress', 'prefs', 'sittings'];
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } };
+const ssGet = k => { try { return sessionStorage.getItem(k); } catch (e) { return null; } };
+const ssSet = (k, v) => { try { sessionStorage.setItem(k, v); } catch (e) {} };
+const ssDel = k => { try { sessionStorage.removeItem(k); } catch (e) {} };
+const noteFail = () => { const n = $('#note'); if (n) n.hidden = false; };
+
+const Store = {
+  db: null, data: {}, chain: {},
+  async init() {
+    let db = null;
+    try { if (window.claude && claude.use) db = await claude.use('db'); } catch (e) { db = null; }
+    this.db = db;
+    const seed = Object.assign({}, SEED, window.HUB_SEED || {});
+    for (const c of CONTENT.concat(USER)) {
+      this.data[c] = {};
+      if (db) {
+        try { const s = await db.collection(c).get(); s.docs.forEach(d => { if (d.exists) this.data[c][d.id] = d.data(); }); }
+        catch (e) { noteFail(); }
+      } else if (CONTENT.includes(c)) {
+        this.data[c] = JSON.parse(JSON.stringify(seed[c] || {}));
+      } else {
+        try { this.data[c] = JSON.parse(lsGet('hub:' + c) || '{}') || {}; } catch (e) { this.data[c] = {}; }
+        if (window.HUB_SEED && window.HUB_SEED[c] && !Object.keys(this.data[c]).length) this.data[c] = JSON.parse(JSON.stringify(window.HUB_SEED[c]));
+      }
+    }
+  },
+  all(c) { return this.data[c] || (this.data[c] = {}); },
+  get(path) { const [c, id] = path.split('/'); return this.all(c)[id]; },
+  // one write at a time per document path
+  queue(path, fn) {
+    const p = (this.chain[path] || Promise.resolve()).then(fn).catch(noteFail);
+    this.chain[path] = p; return p;
+  },
+  flush(c) { if (!lsSet('hub:' + c, JSON.stringify(this.all(c)))) noteFail(); },
+  set(path, obj) {
+    const [c, id] = path.split('/'); this.all(c)[id] = obj;
+    if (this.db) this.queue(path, () => this.db.doc(path).set(obj)); else this.flush(c);
+  },
+  update(path, patch) {
+    const [c, id] = path.split('/'); this.all(c)[id] = Object.assign({}, this.all(c)[id], patch);
+    if (this.db) this.queue(path, () => this.db.doc(path).set(this.all(c)[id])); else this.flush(c);
+  },
+  add(c, obj) {
+    let id;
+    if (this.db) { const ref = this.db.collection(c).doc(); id = ref.id; this.all(c)[id] = obj; this.queue(c + '/' + id, () => ref.set(obj)); }
+    else { id = 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); this.all(c)[id] = obj; this.flush(c); }
+    return id;
+  }
+};
+
+// ---------- helpers ----------
+const typeset = el => (window.MathJax && MathJax.typesetPromise) ? MathJax.typesetPromise([el]).catch(() => {}) : null;
+const DAY = 864e5;
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const today = () => ymd(new Date());
+const addDays = n => { const d = new Date(); d.setDate(d.getDate() + n); return ymd(d); };
+const GAP = [1, 3, 7, 14, 30];
+const ago = iso => { if (!iso) return ''; const m = (Date.now() - new Date(iso)) / 6e4;
+  return m < 60 ? 'just now' : m < 1440 ? Math.floor(m / 60) + 'h ago' : Math.floor(m / 1440) === 0 ? 'today' : Math.floor(m / 1440) + 'd ago'; };
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const wkNum = w => parseInt(String(w).replace(/\D/g, ''), 10) || 0;
+const unitKey = u => String(u || '').toLowerCase();
+
+// Leitner update. prev = srs doc before this attempt (or undefined).
+function srsApply(qid, ok, sure, prev) {
+  const b = prev ? prev.box : 0;
+  const box = !ok ? 0 : sure ? Math.min(b + 1, 4) : Math.max(b, 0);
+  Store.set('srs/' + qid, { box, due: addDays(GAP[box]), last: new Date().toISOString() });
+}
+
+// ---------- stats ----------
+const score = a => a.ok ? (a.sure === false ? 0.5 : 1) : 0;
+function stats() {
+  const Qs = Store.all('questions'), att = Object.entries(Store.all('attempts')).map(([id, a]) => Object.assign({ id }, a)).sort((a, b) => a.at < b.at ? 1 : a.at > b.at ? -1 : 0);
+  const byQ = {}, con = {};
+  att.forEach(a => {
+    (byQ[a.qid] = byQ[a.qid] || []).push(a);
+    const q = Qs[a.qid]; if (!q) return;
+    (q.concepts || []).forEach(c => { const o = con[c] = con[c] || { sc: [], n: 0, last: null, ok: 0 }; o.sc.push(score(a)); o.n++; if (a.ok) o.ok++; if (!o.last) o.last = a.at; });
+  });
+  Object.values(con).forEach(o => { let w = 1, s = 0, t = 0; o.sc.forEach(x => { s += w * x; t += w; w *= 0.7; }); o.m = s / t; });
+  return { byQ, con };
+}
+const barColor = m => m == null ? 'var(--line)' : m < 0.5 ? 'var(--bad)' : m < 0.8 ? 'var(--shaky)' : 'var(--good)';
+
+// ---------- session generation ----------
+function weakScore(q, S, srs, t) {
+  let w = 0; const cs = q.concepts || [];
+  if (!cs.length) w = 0.3;
+  cs.forEach(c => { const o = S.con[c]; w = Math.max(w, o ? 1 - o.m : 0.6); });
+  const atts = S.byQ[q.id] || [];
+  if (srs[q.id] && srs[q.id].due <= t) w += 0.5;
+  if (!atts.length) w += 0.3;
+  const a0 = atts[0]; if (a0 && a0.ok && a0.sure !== false && Date.now() - new Date(a0.at) < DAY) w -= 0.4;
+  return w;
+}
+function weakIds(n, filter) {
+  const S = stats(), srs = Store.all('srs'), t = today();
+  const qs = Object.entries(Store.all('questions')).map(([id, q]) => Object.assign({ id }, q)).filter(q => !filter || filter(q));
+  const top = shuffle(qs).map(q => [q, weakScore(q, S, srs, t)]).sort((a, b) => b[1] - a[1]).slice(0, n).map(x => x[0]);
+  const out = []; const rest = top.slice();
+  while (rest.length) {
+    const prev = out.length ? (out[out.length - 1].concepts || [])[0] : null;
+    let k = rest.findIndex(q => (q.concepts || [])[0] !== prev); if (k < 0) k = 0;
+    out.push(rest.splice(k, 1)[0]);
+  }
+  return out.map(q => q.id);
+}
+function dueIds() {
+  const t = today(), Qs = Store.all('questions');
+  return Object.entries(Store.all('srs')).filter(([id, s]) => Qs[id] && s.due <= t).sort((a, b) => a[1].due < b[1].due ? -1 : a[1].due > b[1].due ? 1 : 0).map(x => x[0]);
+}
+
+// ---------- one-time import of the old single-quiz answers ----------
+function importOld() {
+  const QZ = 'ece4179-w7-9', quiz = Store.all('quizzes')[QZ], marker = 'hub:imported:ece4179-w7-9';
+  if (!quiz || lsGet(marker)) return;
+  const raw = lsGet('quiz:ECE4179 Weeks 7–9 Quiz'); if (!raw) return;
+  let s; try { s = JSON.parse(raw); } catch (e) { return; }
+  if (!s || s.n !== quiz.qids.length) return;
+  if (Object.values(Store.all('attempts')).some(a => a.imported && a.quiz === QZ)) { lsSet(marker, '1'); return; }
+  const res = s.res || [], pick = s.pick || [], now = new Date().toISOString(), skipped = [];
+  quiz.qids.forEach((qid, k) => {
+    if (res[k] === 'skip') skipped.push(qid);
+    if (res[k] === true || res[k] === false) {
+      Store.add('attempts', { qid, quiz: QZ, ok: res[k], pick: pick[k] == null ? null : pick[k], sure: null, at: now, imported: true });
+      srsApply(qid, res[k], true, Store.get('srs/' + qid));
+    }
+  });
+  Store.set('progress/' + QZ, { i: Math.max(0, Math.min(s.i || 0, quiz.qids.length)), skipped });
+  lsSet(marker, '1');
+}
+
+// ---------- run (a quiz or a generated session being worked through) ----------
+let run = null, flagOpen = false;
+function latestIn(quizKey) { // latest attempt per qid within a quiz key
+  const m = {};
+  Object.entries(Store.all('attempts')).forEach(([id, a]) => { if (a.quiz === quizKey && (!m[a.qid] || a.at >= m[a.qid].at)) m[a.qid] = Object.assign({ id }, a); });
+  return m;
+}
+function toRes(a) { return { ok: a.ok, pick: a.pick, sure: a.sure, att: a.id }; }
+function buildRun(route) {
+  const Qs = Store.all('questions'); let r;
+  if (route.kind === 'quiz') {
+    const z = Store.all('quizzes')[route.id]; if (!z) return null;
+    const pr = Store.get('progress/' + route.id) || {}, lat = latestIn(route.id), res = {};
+    Object.entries(lat).forEach(([q, a]) => res[q] = toRes(a));
+    const open = z.qids.findIndex(q => !res[q]);
+    r = { key: route.id, quiz: route.id, title: z.title, qids: z.qids.filter(q => Qs[q]), i: pr.i != null ? pr.i : Math.max(open, 0), skipped: new Set((pr.skipped || []).filter(q => !res[q])), res, persistent: true };
+  } else {
+    const sk = 'hub:sess:' + route.key, saved = ssGet(sk); let st = null;
+    try { st = saved && JSON.parse(saved); } catch (e) {}
+    const titles = { weak: 'Revise weak spots', due: 'Due reviews' };
+    const title = route.kind === 'weak' ? titles.weak : route.kind === 'due' ? titles.due : 'Practice: ' + ((Store.all('concepts')[route.id] || {}).name || 'concept');
+    if (!st) {
+      const qids = route.kind === 'weak' ? weakIds(10) : route.kind === 'due' ? dueIds() : weakIds(10, q => (q.concepts || []).includes(route.id));
+      st = { qids, i: 0, skipped: [], res: {} };
+    }
+    r = { key: route.key, quiz: route.kind === 'concept' ? 'concept:' + route.id : route.kind, title, qids: st.qids.filter(q => Qs[q]), i: st.i, skipped: new Set(st.skipped), res: st.res, persistent: false, sk };
+  }
+  r.Q = r.qids.map(id => Object.assign({ id }, Qs[id]));
+  return r;
+}
+function persist() {
+  const r = run, skipped = [...r.skipped];
+  if (r.persistent) {
+    const p = Store.get('progress/' + r.key);
+    if (!p || p.i !== r.i || p.skipped.length !== skipped.length || skipped.some(q => !p.skipped.includes(q))) Store.set('progress/' + r.key, { i: r.i, skipped });
+  } else ssSet(r.sk, JSON.stringify({ qids: r.qids, i: r.i, skipped, res: r.res }));
+}
+
+const answered = k => !!run.res[run.qids[k]];
+function nextOpen() { const n = run.qids.length;
+  for (let d = 1; d <= n; d++) { const k = (run.i + d) % n; if (!answered(k) && !run.skipped.has(run.qids[k])) return k; }
+  for (let d = 1; d <= n; d++) { const k = (run.i + d) % n; if (!answered(k) && k !== run.i) return k; } return n; }
+function go(k) { run.i = Math.max(0, Math.min(k, run.qids.length)); flagOpen = false; persist(); showQuiz(); }
+
+// ---------- views ----------
+const app = () => $('#app');
+const icon = id => `<svg class="ic" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+// Examiner's marks, drawn by hand: tick (right and sure), orange tick (right but guessed), cross (wrong), dash (skipped).
+const MK = { ok: '<path d="M4 13.5c2 1.6 3.4 3.3 4.6 5.4C11 13 15 7.6 20.5 4"/>', no: '<path d="M5.5 5.5c4.3 4 8.6 8.6 13 13"/><path d="M18.5 5c-4.6 4.4-8.6 9-13 14"/>', sk: '<path d="M5 12.5c4.6-.8 9.3-1 14-.4"/>' };
+const MKNAME = { ok: 'right', gs: 'right, guessed', no: 'wrong', sk: 'skipped' };
+const markKind = (a, skipped) => a ? (a.ok ? (a.sure === false ? 'gs' : 'ok') : 'no') : skipped ? 'sk' : null;
+const mark = (k, draw) => k ? `<svg class="mk ${k}${draw ? ' draw' : ''}" viewBox="0 0 24 24" aria-hidden="true">${MK[k === 'gs' ? 'ok' : k]}</svg>` : '';
+let drawMark = false; // true for the one render straight after an answer, so the mark is drawn in
+const heat = m => m == null ? 'var(--untried)' : m < 0.5 ? 'var(--bad)' : m < 0.8 ? 'var(--shaky)' : 'var(--good)';
+
+// ---------- theme prefs (preset, mode, per-unit colour) ----------
+let PREFS = (() => { try { return JSON.parse(lsGet('hub:prefs') || 'null') || {}; } catch (e) { return {}; } })();
+const preset = () => PRESETS.find(p => p.id === PREFS.preset) || PRESETS[0];
+function savePrefs() { lsSet('hub:prefs', JSON.stringify(PREFS)); Store.set('prefs/ui', JSON.parse(JSON.stringify(PREFS))); }
+const HUE_NAMES = ['Red', 'Orange', 'Amber', 'Yellow', 'Lime', 'Green', 'Teal', 'Cyan', 'Blue', 'Indigo', 'Purple', 'Pink'];
+
+// ---------- units ----------
+function unitList() {
+  const out = {}, add = (u, extra) => { const k = unitKey(u); if (!k) return; out[k] = Object.assign(out[k] || { key: k, unit: u }, extra || {}); };
+  Object.values(Store.all('meta')).forEach(m => m && m.unit && add(m.unit, m));
+  Object.values(Store.all('quizzes')).forEach(z => add(z.unit));
+  Object.values(Store.all('concepts')).forEach(c => add(c.unit));
+  return Object.values(out).sort((a, b) => a.key < b.key ? -1 : 1);
+}
+function unitHue(key) {
+  const us = unitList(), i = Math.max(0, us.findIndex(u => u.key === key));
+  const o = (PREFS.unitHue || {})[key];
+  return o != null ? o : key ? preset().units[i % 5] : preset().ha;
+}
+const uAttr = key => `data-uk="${esc(key || '')}" style="--uh:${unitHue(key)}"`;
+const dot = h => `oklch(64% .16 ${h})`;
+function nextUnit(us) {
+  const up = us.filter(u => { const e = examParts(u); return e && e.days >= 0; }).sort((a, b) => new Date(a.examDate) - new Date(b.examDate));
+  return up[0] || us.find(u => Object.values(Store.all('quizzes')).some(z => unitKey(z.unit) === u.key)) || us[0] || null;
+}
+function unitStats(key, S) {
+  const cs = Object.entries(Store.all('concepts')).filter(([, c]) => unitKey(c.unit) === key)
+    .sort((a, b) => wkNum(a[1].week) - wkNum(b[1].week) || (a[1].order || 0) - (b[1].order || 0));
+  const tried = cs.filter(([id]) => S.con[id]), weak = tried.filter(([id]) => S.con[id].m < 0.5);
+  return { cs, tried: tried.length, weak: weak.length, quizzes: Object.entries(Store.all('quizzes')).filter(([, z]) => unitKey(z.unit) === key) };
+}
+const heatStrip = (cs, S, label) => cs.length ? `<span class="heat" role="img" aria-label="${esc(label)}">${cs.map(([id, c]) => `<i style="background:${heat(S.con[id] && S.con[id].m)}" title="${esc(c.name)}"></i>`).join('')}</span>` : '';
+
+function examParts(m) {
+  if (!m || !m.examDate) return null;
+  const d = new Date(m.examDate), days = Math.ceil((d - Date.now()) / DAY);
+  const f = new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Melbourne', weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
+  const p = {}; f.formatToParts(d).forEach(x => p[x.type] = x.value);
+  return { days, when: `${p.weekday} ${p.day} ${p.month}, ${p.hour}:${p.minute}` };
+}
+const daysTxt = e => !e ? 'No exam date' : e.days < 0 ? 'Exam finished' : e.days === 0 ? 'Exam today' : `${e.days} ${e.days === 1 ? 'day' : 'days'} to exam`;
+
+// ---------- app bar + theme panel ----------
+const LOGO = `<svg class="logo" viewBox="0 0 32 32" aria-hidden="true"><rect x="2" y="2" width="28" height="28" rx="9" fill="var(--acc)"/><path d="M9 17c1.6 1.2 2.8 2.7 3.8 4.4C14.8 16 18 11.8 23 8.5" fill="none" stroke="var(--on-acc)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function topbar(back) {
+  const us = unitList().slice(0, 2), dots = [`var(--acc)`].concat(us.map(u => dot(unitHue(u.key))));
+  const left = back ? `<a class="crumb" href="${back.href}">${icon('left')}${esc(back.label)}</a>` : `<a class="brand" href="#/">${LOGO}<span class="wm">Study Hub</span></a>`;
+  return `<header class="top"><div class="wrap">${left}<span class="sp"></span>
+    <button class="pal-btn" id="palb" aria-expanded="false" aria-controls="pal"><span class="dots" aria-hidden="true">${dots.map(c => `<i style="background:${c}"></i>`).join('')}</span><span class="lbl">Theme</span></button></div></header>`;
+}
+let palFonts = false;
+function palOpen() {
+  const p = $('#pal'); if (!p) return;
+  if (!palFonts) { palFonts = true; const l = document.createElement('link'); l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700&family=Unbounded:wght@700&family=Syne:wght@700&family=Fraunces:wght@700&family=Instrument+Serif&family=Atkinson+Hyperlegible+Next:wght@700&display=swap'; document.head.appendChild(l); }
+  palRender(); p.hidden = false; const b = $('#palb'); if (b) b.setAttribute('aria-expanded', 'true');
+  const f = p.querySelector('[aria-pressed="true"]'); if (f) f.focus();
+}
+function palClose(refocus) { const p = $('#pal'); if (!p || p.hidden) return; p.hidden = true; const b = $('#palb'); if (b) { b.setAttribute('aria-expanded', 'false'); if (refocus) b.focus(); } }
+function palRender() {
+  const P = preset(), mode = PREFS.mode || 'auto', us = unitList();
+  $('#pal').innerHTML = `<div class="pal-h"><h2 id="pal-t">Theme</h2><button class="x" id="palx" aria-label="Close">${icon('x')}</button></div>
+    <div><h3>Style</h3><div class="presets">${PRESETS.map(p => `<button class="preset" data-p="${p.id}" aria-pressed="${p.id === P.id}" style="background:oklch(95% ${p.cb * 1.6} ${p.hb});color:oklch(22% .03 ${p.ha})">
+      <span class="pn" style="font-family:'${p.display}';font-weight:${p.id === 'matcha' ? 400 : 700}">${esc(p.name)}</span>
+      <span class="pd" aria-hidden="true"><i style="background:oklch(48% ${p.ca} ${p.ha})"></i>${p.units.slice(0, 3).map(h => `<i style="background:oklch(${80}% ${p.uc * 1.3} ${h})"></i>`).join('')}</span></button>`).join('')}</div></div>
+    <div><h3>Mode</h3><span class="seg" role="group" aria-label="Light or dark">${[['auto', 'Auto'], ['light', 'Light'], ['dark', 'Dark']].map(([v, l]) => `<button data-m="${v}" aria-pressed="${mode === v}">${l}</button>`).join('')}</span></div>
+    ${us.length ? `<div><h3>Unit colours</h3>${us.map(u => { const h = unitHue(u.key); return `<div class="urow"><b>${esc(u.unit)}</b><span class="sw" role="group" aria-label="${esc(u.unit)} colour">${HUES.map((x, i) => `<button data-u="${esc(u.key)}" data-h="${x}" aria-label="${HUE_NAMES[i]}" aria-pressed="${x === h}" style="background:${dot(x)}"></button>`).join('')}</span></div>`; }).join('')}
+      ${PREFS.unitHue && Object.keys(PREFS.unitHue).length ? '<button class="btn out sm" id="hreset" style="margin-top:8px">Use the style\'s unit colours</button>' : ''}</div>` : ''}`;
+  const P2 = $('#pal');
+  $('#palx').onclick = () => palClose(true);
+  P2.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { PREFS.preset = b.dataset.p; delete PREFS.unitHue; themeChanged(); });
+  P2.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { PREFS.mode = b.dataset.m; themeChanged(); });
+  P2.querySelectorAll('[data-u]').forEach(b => b.onclick = () => { PREFS.unitHue = Object.assign({}, PREFS.unitHue, { [b.dataset.u]: +b.dataset.h }); themeChanged(); });
+  if ($('#hreset')) $('#hreset').onclick = () => { delete PREFS.unitHue; themeChanged(); };
+}
+function themeChanged() {
+  const f = document.activeElement, sel = f && f.dataset ? Object.entries(f.dataset).map(([k, v]) => `[data-${k}="${v}"]`).join('') : '';
+  applyTheme(PREFS); savePrefs();
+  document.querySelectorAll('[data-uk]').forEach(el => el.style.setProperty('--uh', unitHue(el.dataset.uk)));
+  const d = $('#palb .dots'); if (d) d.innerHTML = [`var(--acc)`].concat(unitList().slice(0, 2).map(u => dot(unitHue(u.key)))).map(c => `<i style="background:${c}"></i>`).join('');
+  palRender(); if (sel) { const g = $('#pal').querySelector(sel); if (g) g.focus(); }
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('#palb')) { const p = $('#pal'); p.hidden ? palOpen() : palClose(false); return; }
+  // composedPath, not closest: picking an option re-renders the panel, which detaches the clicked button
+  const p = $('#pal'); if (p && !p.hidden && !e.composedPath().includes(p)) palClose(false);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') palClose(true); });
+
+// ---------- quiz ----------
+function strip() {
+  const n = run.qids.length;
+  $('#strip').innerHTML = run.qids.map((id, k) => { const r = run.res[id], mk = markKind(r, run.skipped.has(id));
+    const lbl = `Question ${k + 1}${mk ? ', ' + MKNAME[mk] : ''}`;
+    return `<button class="cell${mk ? ' has' : ''}${k === run.i ? ' cur' : ''}" data-k="${k}" aria-label="${lbl}" title="${lbl}"${k === run.i ? ' aria-current="step"' : ''}><span>${k + 1}</span>${mark(mk, drawMark && k === run.i)}</button>`; }).join('');
+  $('#strip').querySelectorAll('button').forEach(b => b.onclick = () => go(+b.dataset.k));
+  const d = run.qids.filter(id => run.res[id]), right = d.filter(id => run.res[id].ok).length;
+  $('#score').textContent = `${right} right of ${d.length}${run.skipped.size ? ` · ${run.skipped.size} skipped` : ''} · ${run.i < n ? `Q${run.i + 1} of ${n}` : 'results'}`;
+}
+
+const mmss = t => Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
+function links(q, ok, lead) {
+  const L = q.link || {}; const a = [];
+  if (L.v) a.push(`<a href="https://monash.au.panopto.com/Panopto/Pages/Viewer.aspx?id=${L.v.id}&start=${L.v.t}" target="_blank" rel="noopener">${icon('play')}<span>${L.v.title} at ${mmss(L.v.t)}</span></a>`);
+  if (L.d) a.push(`<a href="https://drive.google.com/file/d/${L.d.f}/view" target="_blank" rel="noopener">${icon('doc')}<span>${L.d.deck} slides, p.${L.d.p.join(', ')}</span></a>`);
+  if (!a.length) return '';
+  const p = lead === false ? '' : `<p>${ok ? 'Where it was taught' : 'Go back to where it was taught'}</p>`;
+  return `<div class="taught${ok ? '' : ' miss'}">${p}${a.join('')}</div>`;
+}
+
+function quizShell() {
+  const u = run.unit, back = u ? { href: '#/u/' + encodeURIComponent(u), label: (unitList().find(x => x.key === u) || { unit: u }).unit } : { href: '#/', label: 'Home' };
+  app().innerHTML = topbar(back) + `<main class="wrap qpage">
+    <div class="qhead u" ${uAttr(u)}><h1>${esc(run.title)}</h1><span class="n" id="score"></span></div>
+    <nav class="cells big" id="strip" aria-label="Questions"></nav><section id="card"></section></main>`;
+}
+
+function showQuiz() {
+  if (!$('#strip')) quizShell();
+  strip();
+  const c = $('#card'), n = run.qids.length;
+  c.className = 'sheet';
+  if (!n) { c.innerHTML = `<div class="body"><p class="empty">${run.quiz.indexOf('due') === 0 ? 'Nothing is due today. Your next reviews will show up here.' : 'No questions here yet.'}</p><div><a class="btn out" href="#/">${icon('left')}Home</a></div></div>`; drawMark = false; return; }
+  if (run.i >= n) return summary();
+  const q = run.Q[run.i], i = run.i, r = run.res[q.id], mk = markKind(r, run.skipped.has(q.id));
+  const body = q.o ? `<div class="opts">${q.o.map((t, k) => `<button class="opt" id="o${k}" data-k="${k}"><span class="k">${'ABCD'[k]}</span><span>${t}</span></button>`).join('')}</div>`
+    : `<form class="numf" id="nf"><input id="nin" inputmode="decimal" aria-label="Your answer" placeholder="Your answer" autocomplete="off"><button class="btn" type="submit">Check</button></form>`;
+  const flagged = Object.values(Store.all('flags')).some(f => f.qid === q.id && !f.resolved);
+  c.innerHTML = `<div class="head"><span class="qn">Q${i + 1}</span><span class="wkt">${esc(q.w)}</span><span id="mkw">${mark(mk, drawMark)}</span></div>
+    <div class="body"><div class="q">${q.q}</div>${!r && run.skipped.has(q.id) ? '<div class="state">You skipped this one earlier.</div>' : ''}${body}<div id="fbw"></div>
+    <div class="qnav"><span><button class="btn out" id="prev" ${i === 0 ? 'disabled' : ''}>${icon('left')}Back</button><button class="btn out" id="flag" ${flagged ? 'disabled' : ''}>${icon('flag')}${flagged ? 'Flagged' : 'Flag'}</button></span>
+    <span>${r ? '' : '<button class="btn out" id="skip">Skip</button>'}<button class="btn${r ? '' : ' out'}" id="next">${r ? 'Next question' : 'Next'}${icon('right')}</button></span></div>
+    <div id="flagw"></div></div>`;
+  $('#prev').onclick = () => go(i - 1);
+  $('#next').onclick = () => r ? go(nextOpen()) : go(i + 1);
+  if ($('#skip')) $('#skip').onclick = () => { run.skipped.add(q.id); go(nextOpen()); };
+  $('#flag').onclick = () => { flagOpen = !flagOpen; flagBox(q); };
+  if (r) feedback(); else {
+    if (q.o) c.querySelectorAll('.opt').forEach(b => b.onclick = () => answer(+b.dataset.k));
+    else $('#nf').onsubmit = e => { e.preventDefault(); const v = parseFloat($('#nin').value); if (!isNaN(v)) answer(v); };
+  }
+  flagBox(q);
+  typeset(c);
+  drawMark = false;
+}
+
+function flagBox(q) {
+  const w = $('#flagw'); if (!w) return;
+  if (!flagOpen) { w.innerHTML = ''; return; }
+  w.innerHTML = `<div class="flagbox"><label for="fnote">What looks wrong with this question?</label><textarea id="fnote" placeholder="e.g. the answer should be C, or the units are off"></textarea><div><button class="btn sm" id="fsave">Save flag</button></div></div>`;
+  $('#fnote').focus();
+  $('#fsave').onclick = () => { Store.add('flags', { qid: q.id, note: $('#fnote').value.trim(), at: new Date().toISOString(), resolved: false }); flagOpen = false; showQuiz(); };
+}
+
+function answer(v) {
+  const q = run.Q[run.i], ok = q.o ? v === q.a : Math.abs(v - q.num) <= q.tol;
+  const prev = Store.get('srs/' + q.id);
+  const att = Store.add('attempts', { qid: q.id, quiz: run.quiz, ok, pick: v, sure: null, at: new Date().toISOString() });
+  run.res[q.id] = { ok, pick: v, sure: null, att, prev: prev ? Object.assign({}, prev) : null, fresh: true };
+  run.skipped.delete(q.id);
+  srsApply(q.id, ok, true, prev);
+  drawMark = true;
+  persist(); showQuiz(); $('#next').focus();
+}
+
+function feedback() {
+  const q = run.Q[run.i], c = $('#card'), r = run.res[q.id], ok = r.ok, v = r.pick;
+  if (q.o) c.querySelectorAll('.opt').forEach(b => { b.disabled = true; const k = +b.dataset.k; b.querySelectorAll('.mk').forEach(m => m.remove());
+    if (k === q.a) { b.classList.add('right'); b.insertAdjacentHTML('beforeend', mark(r.sure === false && ok ? 'gs' : 'ok')); }
+    else if (k === v) { b.classList.add('wrong'); b.insertAdjacentHTML('beforeend', mark('no')); } });
+  else { $('#nin').value = v; $('#nin').disabled = true; const cb = c.querySelector('#nf .btn'); if (cb) cb.remove(); }
+  const sure = ok ? `<div class="sure"><span>How sure were you?</span><span class="seg" role="group" aria-label="How sure were you?"><button data-s="1" aria-pressed="${r.sure === true}">Sure</button><button data-s="0" aria-pressed="${r.sure === false}">Guessed</button></span></div>` : '';
+  $('#fbw').innerHTML = `<div class="fb"><div class="verdict ${ok ? 'ok' : 'no'}">${ok ? 'Correct' : 'Not quite. The answer is ' + (q.o ? 'ABCD'[q.a] : `<span class="n">${q.num}</span>`)}</div><div>${q.e}</div><div class="src">${q.s}</div>${sure}${links(q, ok)}</div>`;
+  $('#fbw').querySelectorAll('[data-s]').forEach(b => b.onclick = () => {
+    r.sure = b.dataset.s === '1'; Store.update('attempts/' + r.att, { sure: r.sure });
+    if (r.fresh) srsApply(q.id, true, r.sure, r.prev);
+    persist();
+    $('#mkw').innerHTML = mark(markKind(r, false));
+    strip(); feedback(); typeset($('#fbw'));
+  });
+  if (nextOpen() >= run.qids.length) $('#next').innerHTML = `See results${icon('right')}`;
+}
+
+function summary() {
+  const c = $('#card'), n = run.qids.length, right = run.qids.filter(id => run.res[id] && run.res[id].ok).length;
+  const miss = run.Q.map((q, k) => [q, k]).filter(([q]) => run.res[q.id] && !run.res[q.id].ok);
+  const open = run.Q.map((q, k) => [q, k]).filter(([q]) => !run.res[q.id]);
+  const item = ([q, k]) => `<li><a href="#" class="jump" data-k="${k}">Q${k + 1}</a> <span class="muted">${esc(q.w)}</span><div>${q.q}</div>${links(q, true, false)}</li>`;
+  const S = stats(), seen = new Set(); run.Q.forEach(q => (q.concepts || []).forEach(x => seen.add(x)));
+  const weak = [...seen].filter(x => S.con[x] && S.con[x].m < 0.8).sort((a, b) => S.con[a].m - S.con[b].m).slice(0, 3).map(x => esc((Store.all('concepts')[x] || {}).name || x));
+  c.innerHTML = `<div class="head"><span class="qn">Results</span></div><div class="body">
+    <div class="result"><span class="big">${right} / ${n}</span><span class="muted">right</span></div>
+    ${weak.length ? `<p class="muted" style="margin:0">Weakest concepts here: ${weak.join(', ')}</p>` : ''}
+    ${miss.length ? `<div class="box"><h2>Revisit</h2><ul class="sum">${miss.map(item).join('')}</ul></div>` : ''}
+    ${open.length ? `<div class="box"><h2>Skipped or not answered</h2><ul class="sum">${open.map(item).join('')}</ul></div>` : ''}
+    ${!miss.length && !open.length ? '<p style="margin:0">Clean sweep.</p>' : ''}
+    <div class="qnav"><span><button class="btn out" id="back">${icon('left')}Back to questions</button></span><span><a class="btn" href="${run.unit ? '#/u/' + encodeURIComponent(run.unit) : '#/'}">Done</a></span></div></div>`;
+  c.querySelectorAll('.jump').forEach(a => a.onclick = e => { e.preventDefault(); go(+a.dataset.k); });
+  $('#back').onclick = () => go(open.length ? open[0][1] : n - 1);
+  typeset(c); strip(); drawMark = false;
+}
+
+// Generated sessions (weak spots, due reviews) can be narrowed to one unit. Replaces the earlier buildRun.
+function buildRun(route) {
+  const Qs = Store.all('questions'), inUnit = q => isAuto(q) && (!route.unit || unitKey(q.unit) === route.unit); let r;
+  if (route.kind === 'quiz') {
+    const z = Store.all('quizzes')[route.id]; if (!z) return null;
+    const pr = Store.get('progress/' + route.id) || {}, lat = latestIn(route.id), res = {};
+    Object.entries(lat).forEach(([q, a]) => res[q] = toRes(a));
+    const open = z.qids.findIndex(q => !res[q]);
+    r = { key: route.id, quiz: route.id, unit: unitKey(z.unit), title: z.title, qids: z.qids.filter(q => Qs[q]), i: pr.i != null ? pr.i : Math.max(open, 0), skipped: new Set((pr.skipped || []).filter(q => !res[q])), res, persistent: true };
+  } else {
+    const sk = 'hub:sess:' + route.key, saved = ssGet(sk); let st = null;
+    try { st = saved && JSON.parse(saved); } catch (e) {}
+    const con = route.kind === 'concept' ? Store.all('concepts')[route.id] || {} : null;
+    const title = route.kind === 'weak' ? 'Revise weak spots' : route.kind === 'due' ? 'Due reviews' : 'Practice: ' + (con.name || 'concept');
+    if (!st) {
+      const qids = route.kind === 'weak' ? weakIds(10, inUnit)
+        : route.kind === 'due' ? dueIds().filter(id => Qs[id] && inUnit(Qs[id]))
+        : weakIds(10, q => isAuto(q) && (q.concepts || []).includes(route.id));
+      st = { qids, i: 0, skipped: [], res: {} };
+    }
+    const quiz = route.kind === 'concept' ? 'concept:' + route.id : route.kind + (route.unit ? ':' + route.unit : '');
+    r = { key: route.key, quiz, unit: route.unit || (con ? unitKey(con.unit) : ''), title, qids: st.qids.filter(q => Qs[q]), i: st.i, skipped: new Set(st.skipped), res: st.res, persistent: false, sk };
+  }
+  r.Q = r.qids.map(id => Object.assign({ id }, Qs[id]));
+  return r;
+}
+
+// ---------- practice exams ----------
+// exams/<id>: {unit, title, created, minutes, qids[], marks?: {qid: n}, intro?}
+// sittings/<id>: {exam, unit, started, timed, minutes, ends, ans: {qid: pick}, rev: [qid], i, done, finished, self: {qid: 0|.5|1}, selfAtt: {qid: attemptId}}
+// Written questions have `ans` (a model answer) instead of options or a number; they are self-marked after the exam.
+const isAuto = q => !!q && (!!q.o || q.num != null);
+const isRight = (q, a) => q.o ? +a === q.a : Math.abs(parseFloat(a) - q.num) <= q.tol;
+const hasAns = a => a != null && String(a).trim() !== '';
+const exMarks = (z, qid) => (z.marks && z.marks[qid]) || 1;
+const exTotal = z => z.qids.reduce((s, q) => s + exMarks(z, q), 0);
+const examsOf = key => Object.entries(Store.all('exams')).filter(([, z]) => unitKey(z.unit) === key).sort((a, b) => a[1].created < b[1].created ? 1 : -1);
+const sitsOf = id => Object.entries(Store.all('sittings')).filter(([, s]) => s && s.exam === id).sort((a, b) => a[1].started < b[1].started ? 1 : -1);
+function exScore(z, s) {
+  const Qs = Store.all('questions'); let got = 0, pending = 0;
+  z.qids.forEach(id => { const q = Qs[id], m = exMarks(z, id), a = (s.ans || {})[id]; if (!q) return;
+    if (isAuto(q)) { if (hasAns(a) && isRight(q, a)) got += m; }
+    else { const v = (s.self || {})[id]; if (v != null) got += m * v; else pending++; } });
+  return { got, total: exTotal(z), pending };
+}
+const fmtDur = ms => { const t = Math.max(0, Math.round(ms / 1000)), h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60, s = t % 60;
+  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
+const mins = ms => { const m = Math.round(ms / 6e4); return m < 60 ? m + ' min' : Math.floor(m / 60) + ' h ' + (m % 60) + ' min'; };
+const shortDate = iso => new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Melbourne', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(iso));
+
+let ex = null, exTick = null, exPend = null;
+function exStop() { if (exTick) clearInterval(exTick); exTick = null; if (exPend) { exPend(); exPend = null; } }
+function exSave(patch) { Store.update('sittings/' + ex.sid, patch); ex.s = Store.get('sittings/' + ex.sid); }
+
+function examShell(z, back, sub) {
+  return topbar(back) + `<main class="wrap qpage"><div class="qhead u" ${uAttr(unitKey(z.unit))}><h1>${esc(z.title)}</h1><span class="n">${sub}</span></div>`;
+}
+function showExam(id, sid) {
+  const z = Store.all('exams')[id], Qs = Store.all('questions');
+  if (!z) { app().innerHTML = topbar({ href: '#/', label: 'Home' }) + `<main class="wrap upage"><p class="empty">That exam isn't here any more.</p></main>`; return; }
+  const uk = unitKey(z.unit), back = { href: '#/u/' + encodeURIComponent(uk) + '/exams', label: (unitList().find(x => x.key === uk) || { unit: z.unit }).unit };
+  const Q = z.qids.filter(q => Qs[q]).map(q => Object.assign({ id: q }, Qs[q]));
+  if (sid && Store.get('sittings/' + sid)) return exReview(id, z, Q, sid, back);
+  const live = sitsOf(id).find(([, s]) => !s.done);
+  if (live) return exRun(id, z, Q, live[0], back);
+  exStart(id, z, Q, back);
+}
+
+function exStart(id, z, Q, back) {
+  const past = sitsOf(id).filter(([, s]) => s.done), nW = Q.filter(q => !isAuto(q)).length, M = z.minutes || 60;
+  const rows = past.map(([sid, s]) => { const r = exScore(z, s);
+    return `<div class="sit"><span>${esc(shortDate(s.started))} · <b class="n">${r.got}/${r.total}</b>${r.pending ? ` <span class="muted">(${r.pending} to mark)</span>` : ''} · <span class="muted">${s.timed ? 'timed, ' : ''}${mins(new Date(s.finished) - new Date(s.started))}</span></span><a href="#/exam/${encodeURIComponent(id)}/r/${encodeURIComponent(sid)}">Review</a></div>`; }).join('');
+  app().innerHTML = examShell(z, back, 'Practice exam') + `<section class="sheet"><div class="body exstart">
+    <dl class="facts"><div><dt>Questions</dt><dd>${Q.length}</dd></div><div><dt>Marks</dt><dd>${exTotal(z)}</dd></div><div><dt>Suggested time</dt><dd>${M} min</dd></div></dl>
+    ${z.intro ? `<div>${z.intro}</div>` : ''}
+    <p class="muted" style="margin:0">No answers are shown until you finish. ${nW ? `${nW} written ${nW === 1 ? 'question is' : 'questions are'} marked by you against a model answer at the end.` : ''}</p>
+    <div class="timed"><span class="seg" role="group" aria-label="Timer"><button data-t="1" aria-pressed="true">Timed</button><button data-t="0" aria-pressed="false">No timer</button></span>
+      <label id="tml"><input type="number" id="tmin" min="5" max="300" step="5" value="${M}" aria-label="Minutes"> minutes</label></div>
+    <div><button class="btn" id="go">${icon('play')}Start exam</button></div>
+    ${rows ? `<div class="box"><h2 style="font-size:1.125rem">Past attempts</h2><div>${rows}</div></div>` : ''}</div></section></main>`;
+  let timed = true;
+  document.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { timed = b.dataset.t === '1';
+    document.querySelectorAll('[data-t]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); $('#tmin').disabled = !timed; });
+  $('#go').onclick = () => {
+    const m = Math.max(1, Math.min(600, parseInt($('#tmin').value, 10) || M)), now = Date.now();
+    Store.add('sittings', { exam: id, unit: z.unit, started: new Date(now).toISOString(), timed, minutes: timed ? m : null, ends: timed ? new Date(now + m * 6e4).toISOString() : null, ans: {}, rev: [], i: 0, done: false, self: {}, selfAtt: {} });
+    showExam(id);
+  };
+  typeset(app());
+}
+
+function exRun(id, z, Q, sid, back) {
+  ex = { id, z, Q, sid, s: Store.get('sittings/' + sid) };
+  app().innerHTML = examShell(z, back, ex.s.timed ? `Timed · ${ex.s.minutes} min` : 'Untimed') + `
+    <div class="exbar"><span class="timer" id="tmr">${icon('clock')}<span></span></span><span class="prog" id="exprog"></span><span class="sp"></span><button class="btn sm" id="fin">Finish exam</button></div>
+    <nav class="cells big" id="strip" aria-label="Questions"></nav><section id="card" class="sheet"></section></main>
+    <dialog class="dlg" id="dlg" aria-labelledby="dlg-t"></dialog>`;
+  $('#fin').onclick = exConfirm;
+  exStrip(); exCard(); exClock(); exTick = setInterval(exClock, 1000);
+}
+function exClock() {
+  if (!ex || !$('#tmr')) return exStop();
+  const s = ex.s, t = $('#tmr span');
+  if (s.timed) { const left = new Date(s.ends) - Date.now();
+    if (left <= 0) { exSubmit(true); return; }
+    t.textContent = fmtDur(left) + ' left'; $('#tmr').classList.toggle('low', left < 5 * 6e4); }
+  else t.textContent = fmtDur(Date.now() - new Date(s.started)) + ' in';
+}
+function exStrip() {
+  const s = ex.s, rev = new Set(s.rev || []);
+  $('#strip').innerHTML = ex.Q.map((q, k) => { const a = hasAns(s.ans[q.id]), r = rev.has(q.id);
+    const lbl = `Question ${k + 1}${a ? ', answered' : ''}${r ? ', marked for review' : ''}`;
+    return `<button class="cell${a ? ' ans' : ''}${r ? ' rev' : ''}${k === s.i ? ' cur' : ''}" data-k="${k}" aria-label="${lbl}" title="${lbl}"${k === s.i ? ' aria-current="step"' : ''}><span>${k + 1}</span></button>`; }).join('');
+  $('#strip').querySelectorAll('button').forEach(b => b.onclick = () => exGo(+b.dataset.k));
+  const n = ex.Q.filter(q => hasAns(s.ans[q.id])).length;
+  $('#exprog').textContent = `${n} of ${ex.Q.length} answered${rev.size ? ` · ${rev.size} to review` : ''}`;
+}
+function exGo(k) { if (exPend) { exPend(); exPend = null; } exSave({ i: Math.max(0, Math.min(k, ex.Q.length - 1)) }); exStrip(); exCard(); window.scrollTo({ top: 0 }); }
+function exCard() {
+  const s = ex.s, i = s.i || 0, q = ex.Q[i], c = $('#card'); if (!q) return;
+  const a = s.ans[q.id], m = exMarks(ex.z, q.id), rev = (s.rev || []).includes(q.id), last = i === ex.Q.length - 1;
+  const body = q.o ? `<div class="opts">${q.o.map((t, k) => `<button class="opt${hasAns(a) && +a === k ? ' picked' : ''}" data-k="${k}" aria-pressed="${hasAns(a) && +a === k}"><span class="k">${'ABCD'[k]}</span><span>${t}</span></button>`).join('')}</div>`
+    : q.num != null ? `<div class="numf"><input id="nin" inputmode="decimal" aria-label="Your answer" placeholder="Your answer" autocomplete="off" value="${hasAns(a) ? esc(String(a)) : ''}"></div>`
+    : `<div class="wr"><textarea id="wtx" aria-label="Your answer" placeholder="Write your answer. Working counts.">${hasAns(a) ? esc(String(a)) : ''}</textarea></div>`;
+  c.innerHTML = `<div class="head"><span class="qn">Q${i + 1}</span><span class="wkt">${esc(q.w || '')}</span><span class="tag" style="margin-left:auto">${m} ${m === 1 ? 'mark' : 'marks'}</span></div>
+    <div class="body"><div class="q">${q.q}</div>${body}
+    <div class="qnav"><span><button class="btn out" id="prev" ${i === 0 ? 'disabled' : ''}>${icon('left')}Back</button><button class="btn out" id="rev" aria-pressed="${rev}">${icon('flag')}${rev ? 'Marked for review' : 'Mark for review'}</button></span>
+    <span>${hasAns(a) && q.o ? '<button class="btn out" id="clr">Clear</button>' : ''}${last ? `<button class="btn" id="fin2">Finish exam${icon('right')}</button>` : `<button class="btn" id="next">Next${icon('right')}</button>`}</span></div></div>`;
+  $('#prev').onclick = () => exGo(i - 1);
+  if ($('#next')) $('#next').onclick = () => exGo(i + 1);
+  if ($('#fin2')) $('#fin2').onclick = exConfirm;
+  $('#rev').onclick = () => { const r = new Set(ex.s.rev || []); r.has(q.id) ? r.delete(q.id) : r.add(q.id); exSave({ rev: [...r] }); exStrip(); exCard(); $('#rev').focus(); };
+  if ($('#clr')) $('#clr').onclick = () => { const A = Object.assign({}, ex.s.ans); delete A[q.id]; exSave({ ans: A }); exStrip(); exCard(); };
+  if (q.o) c.querySelectorAll('.opt').forEach(b => b.onclick = () => { exSave({ ans: Object.assign({}, ex.s.ans, { [q.id]: +b.dataset.k }) }); exStrip(); exCard(); const f = $(`#card .opt[data-k="${b.dataset.k}"]`); if (f) f.focus(); });
+  const inp = $('#nin') || $('#wtx');
+  if (inp) { let tm = null; const save = () => { exSave({ ans: Object.assign({}, ex.s.ans, { [q.id]: inp.value }) }); exStrip(); };
+    inp.oninput = () => { clearTimeout(tm); exPend = () => { clearTimeout(tm); save(); }; tm = setTimeout(() => { exPend = null; save(); }, 600); }; }
+  typeset(c);
+}
+function exConfirm() {
+  if (exPend) { exPend(); exPend = null; }
+  const s = ex.s, n = ex.Q.filter(q => hasAns(s.ans[q.id])).length, open = ex.Q.length - n, rv = (s.rev || []).length, d = $('#dlg');
+  d.innerHTML = `<h2 id="dlg-t">Finish the exam?</h2><p class="muted" style="margin:0">${open ? `${open} ${open === 1 ? 'question has' : 'questions have'} no answer. ` : 'Every question has an answer. '}${rv ? `${rv} marked for review.` : ''}</p>
+    <div class="qnav"><button class="btn out" id="dk">Keep going</button><button class="btn" id="dy">Finish and mark</button></div>`;
+  $('#dk').onclick = () => d.close(); $('#dy').onclick = () => { d.close(); exSubmit(false); };
+  d.showModal(); $('#dk').focus();
+}
+function exSubmit(timeUp) {
+  if (!ex) return; if (exPend) { exPend(); exPend = null; }
+  const s = ex.s, at = new Date().toISOString(), id = ex.id, sid = ex.sid;
+  ex.Q.forEach(q => { const a = s.ans[q.id]; if (!isAuto(q) || !hasAns(a)) return;
+    const ok = isRight(q, a), prev = Store.get('srs/' + q.id);
+    Store.add('attempts', { qid: q.id, quiz: 'exam:' + id, ok, pick: q.o ? +a : parseFloat(a), sure: null, at });
+    srsApply(q.id, ok, true, prev); });
+  exSave({ done: true, finished: at, timeUp: !!timeUp });
+  exStop(); ex = null;
+  location.hash = '#/exam/' + encodeURIComponent(id) + '/r/' + encodeURIComponent(sid);
+}
+
+function exReview(id, z, Q, sid, back) {
+  const s = Store.get('sittings/' + sid), r = exScore(z, s), pct = r.total ? Math.round(100 * r.got / r.total) : 0;
+  const S = stats(), seen = new Set(); Q.forEach(q => { const a = s.ans[q.id]; if (isAuto(q) && !(hasAns(a) && isRight(q, a))) (q.concepts || []).forEach(x => seen.add(x)); });
+  const weak = [...seen].slice(0, 4).map(x => esc((Store.all('concepts')[x] || {}).name || x));
+  const item = (q, k) => {
+    const a = s.ans[q.id], m = exMarks(z, q.id), auto = isAuto(q), sv = (s.self || {})[q.id];
+    const got = auto ? (hasAns(a) && isRight(q, a) ? m : 0) : sv != null ? m * sv : null;
+    const cls = got == null ? '' : got >= m ? 'ok' : got > 0 ? 'part' : 'no';
+    let ans = '';
+    if (q.o) ans = `<div class="opts">${q.o.map((t, j) => `<button class="opt${j === q.a ? ' right' : hasAns(a) && +a === j ? ' wrong' : ''}" disabled><span class="k">${'ABCD'[j]}</span><span>${t}</span>${j === q.a ? mark('ok') : hasAns(a) && +a === j ? mark('no') : ''}</button>`).join('')}</div>${hasAns(a) ? '' : '<p class="yours">You left this blank.</p>'}`;
+    else if (q.num != null) ans = `<p class="yours">Your answer: <b class="n">${hasAns(a) ? esc(String(a)) : 'blank'}</b> · Correct: <b class="n">${q.num}</b></p>`;
+    else ans = `<p class="yours" style="white-space:pre-wrap">${hasAns(a) ? esc(String(a)) : 'No typed answer. Mark your working on paper against this.'}</p><div class="model"><p>Model answer</p>${q.ans || ''}</div>
+      <div class="sure"><span>Your mark${m > 1 ? ` (out of ${m})` : ''}</span>${m <= 2
+        ? `<span class="seg" role="group" aria-label="Mark Q${k + 1}">${Array.from({ length: m * 2 + 1 }, (_, j) => m - j / 2).map(v => `<button data-q="${esc(q.id)}" data-v="${v / m}" aria-pressed="${sv != null && Math.abs(sv * m - v) < 1e-9}">${v}</button>`).join('')}</span>`
+        : `<span class="timed"><input type="number" class="mkin" data-q="${esc(q.id)}" data-m="${m}" min="0" max="${m}" step="0.5" value="${sv != null ? +(sv * m).toFixed(1) : ''}" placeholder="–" aria-label="Mark Q${k + 1} out of ${m}"> / ${m}</span>`}</div>`;
+    const open = cls !== 'ok';
+    return `<details class="rev-q"${open ? ' open' : ''}><summary><b>Q${k + 1}</b><span class="wkt tag">${esc(q.w || '')}</span><span class="pts ${cls}">${got == null ? 'to mark' : `${got}/${m}`}</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
+      <div class="rb"><div class="q">${q.q}</div>${ans}${q.e ? `<div>${q.e}</div>` : ''}${q.s ? `<div class="src">${q.s}</div>` : ''}${links(q, cls === 'ok')}</div></details>`;
+  };
+  app().innerHTML = examShell(z, back, 'Results') + `<section class="sheet"><div class="body">
+    ${s.timeUp ? '<p class="state" style="margin:0;color:var(--bad);font-weight:700">Time ran out, so the exam was handed in.</p>' : ''}
+    <div class="result"><span class="big">${r.got} / ${r.total}</span><span class="muted">marks · ${pct}% · ${mins(new Date(s.finished) - new Date(s.started))}${s.timed ? ` of ${s.minutes}` : ''}</span></div>
+    ${r.pending ? `<p style="margin:0">Mark your ${r.pending} written ${r.pending === 1 ? 'answer' : 'answers'} below to finish your score.</p>` : ''}
+    ${weak.length ? `<p class="muted" style="margin:0">Lost marks on: ${weak.join(', ')}</p>` : ''}
+    <div>${Q.map(item).join('')}</div>
+    <div class="qnav"><span><a class="btn out" href="${back.href}">${icon('left')}All exams</a></span><span><a class="btn" href="#/exam/${encodeURIComponent(id)}">Try again</a></span></div></div></section></main>`;
+  const setSelf = (qid, v) => {
+    const cur = Store.get('sittings/' + sid), self = Object.assign({}, cur.self, { [qid]: v }), sa = Object.assign({}, cur.selfAtt);
+    const att = { qid, quiz: 'exam:' + id, ok: v > 0, pick: null, sure: v > 0 && v < 1 ? false : null, at: new Date().toISOString() };
+    if (sa[qid] && Store.get('attempts/' + sa[qid])) Store.update('attempts/' + sa[qid], att); else sa[qid] = Store.add('attempts', att);
+    Store.update('sittings/' + sid, { self, selfAtt: sa });
+    const y = window.scrollY; exReview(id, z, Q, sid, back); window.scrollTo(0, y);
+  };
+  app().querySelectorAll('[data-v]').forEach(b => b.onclick = () => setSelf(b.dataset.q, +b.dataset.v));
+  app().querySelectorAll('.mkin').forEach(n => n.onchange = () => { const m = +n.dataset.m, v = parseFloat(n.value);
+    if (isNaN(v)) return; setSelf(n.dataset.q, Math.round(Math.max(0, Math.min(m, v)) * 2) / 2 / m); });
+  typeset(app());
+}
+
+function examsBody(u) {
+  const xs = examsOf(u.key);
+  if (!xs.length) return `<p class="empty">No practice exams yet. Ask Claude for a practice exam on ${esc(u.unit)} and it will land here, timed or untimed, your choice.</p>`;
+  return `<div class="list">${xs.map(([id, z]) => {
+    const ss = sitsOf(id), live = ss.find(([, s]) => !s.done), done = ss.filter(([, s]) => s.done);
+    const best = done.map(([, s]) => exScore(z, s)).sort((a, b) => b.got - a.got)[0];
+    const label = live ? 'Continue' : done.length ? 'Retake' : 'Start';
+    const tags = (live ? '<span class="tag live">In progress</span>' : '') + (best ? `<span class="tag">Best ${best.got}/${best.total}</span><span class="tag">${done.length} ${done.length === 1 ? 'attempt' : 'attempts'}</span>` : '');
+    return `<div class="qrow exrow"><div><h3>${esc(z.title)}</h3><div class="meta"><span class="n">${z.qids.length}</span> questions · <span class="n">${exTotal(z)}</span> marks · <span class="n">${z.minutes || 60}</span> min</div>${tags ? `<div class="tags">${tags}</div>` : ''}</div>
+      <a class="btn ${done.length && !live ? 'out ' : ''}sm" href="#/exam/${encodeURIComponent(id)}" aria-label="${label} ${esc(z.title)}">${label}${icon('right')}</a></div>`;
+  }).join('')}</div>`;
+}
+
+// ---------- home ----------
+const clearSessions = () => { try { Object.keys(sessionStorage).forEach(k => { if (k.indexOf('hub:sess:') === 0) ssDel(k); }); } catch (e) {} };
+function ring(f) { const C = 2 * Math.PI * 18; return `<svg class="ring" viewBox="0 0 42 42" aria-hidden="true"><circle class="bgc" cx="21" cy="21" r="18"/><circle class="fg" cx="21" cy="21" r="18" stroke-dasharray="${(C * f).toFixed(1)} ${C.toFixed(1)}"/></svg>`; }
+function lastQuiz() {
+  let best = null; const Zs = Store.all('quizzes');
+  Object.values(Store.all('attempts')).forEach(a => { if (Zs[a.quiz] && (!best || a.at > best.at)) best = a; });
+  if (!best) return null;
+  const z = Zs[best.quiz], lat = latestIn(best.quiz), d = z.qids.filter(q => lat[q]).length;
+  return d < z.qids.length ? { id: best.quiz, z, d } : null;
+}
+function sitsOf2() { // the most recent unfinished practice exam, if any
+  const Zs = Store.all('exams'), live = Object.values(Store.all('sittings')).filter(s => s && !s.done && Zs[s.exam]).sort((a, b) => a.started < b.started ? 1 : -1)[0];
+  if (!live) return null; const z = Zs[live.exam];
+  return { id: live.exam, z, n: z.qids.length, d: z.qids.filter(q => hasAns((live.ans || {})[q])).length };
+}
+function showHome() {
+  clearSessions();
+  const S = stats(), us = unitList(), nu = nextUnit(us), nDue = dueIds().length;
+  const now = new Date(), hr = +new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Melbourne', hour: 'numeric', hour12: false }).format(now);
+  const hi = hr < 5 ? 'Late one' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+  const date = new Intl.DateTimeFormat('en-AU', { timeZone: 'Australia/Melbourne', weekday: 'long', day: 'numeric', month: 'long' }).format(now);
+  let hero = '';
+  if (nu) {
+    const e = examParts(nu), lq = lastQuiz(), lx = sitsOf2();
+    const big = e && e.days > 0 ? `<div class="big"><b>${e.days}</b><span>${e.days === 1 ? 'day' : 'days'} to go</span></div>` : `<div class="big"><span>${esc(daysTxt(e))}</span></div>`;
+    hero = `<section class="hero u" ${uAttr(nu.key)} aria-label="Next exam">
+      <div><p class="k">${e && e.days >= 0 ? 'Next exam' : 'Up next'} · ${esc(nu.unit)}</p>${big}<p class="when">${e ? esc(e.when) + ' · ' : ''}${esc(nu.name || nu.unit)}</p></div>
+      <div class="side"><div class="acts"><a class="btn" href="#/s/weak">${icon('target')}Revise weak spots</a>
+        ${nDue ? `<a class="btn out" href="#/s/due">${icon('clock')}Due reviews <span class="badge">${nDue}</span></a>` : `<button class="btn out" disabled>${icon('clock')}Nothing due</button>`}</div>
+        ${lx ? `<a class="cont" href="#/exam/${encodeURIComponent(lx.id)}">${ring(lx.d / lx.n)}<span><small>Practice exam in progress</small><b>${esc(lx.z.title)}</b><span class="muted n" style="font-size:.875rem">${lx.d} of ${lx.n} answered</span></span>${icon('right')}</a>` : lq ? `<a class="cont" href="#/quiz/${encodeURIComponent(lq.id)}">${ring(lq.d / lq.z.qids.length)}<span><small>Pick up where you left off</small><b>${esc(lq.z.title)}</b><span class="muted n" style="font-size:.875rem">${lq.d} of ${lq.z.qids.length} answered</span></span>${icon('right')}</a>` : ''}</div></section>`;
+  }
+  const cards = us.map(u => {
+    const x = unitStats(u.key, S), e = examParts(u);
+    return `<a class="ucard u" ${uAttr(u.key)} href="#/u/${encodeURIComponent(u.key)}">
+      <div class="face"><div><div class="code">${esc(u.unit)}</div>${u.name ? `<div class="name">${esc(u.name)}</div>` : ''}</div><span class="chip">${icon('clock')}${esc(daysTxt(e))}</span></div>
+      <div class="info">${x.cs.length ? heatStrip(x.cs, S, `${x.tried} of ${x.cs.length} concepts practised`) : ''}
+        <div class="meta"><span>${x.cs.length ? `<b class="n">${x.tried}</b> of <span class="n">${x.cs.length}</span> concepts` : 'No quizzes yet'}</span><span>${[[x.quizzes.length, 'quiz', 'quizzes'], [examsOf(u.key).length, 'exam', 'exams']].filter(c => c[0]).map(([n, a, b]) => `<b class="n">${n}</b> ${n === 1 ? a : b}`).join(' · ')}</span></div></div></a>`;
+  }).join('');
+  app().innerHTML = topbar() + `<main class="wrap home">
+    <section class="hello"><p class="eyebrow">${esc(date)}</p><h1>${hi}.</h1></section>
+    ${hero}
+    <section aria-labelledby="ut"><div class="sec-h"><h2 id="ut">Your units</h2><span class="muted">${us.length} ${us.length === 1 ? 'unit' : 'units'}</span></div>
+      ${us.length ? `<div class="units">${cards}</div>` : '<p class="empty">No units yet. Ask Claude to quiz you on a week and it will appear here.</p>'}</section>
+  </main>`;
+}
+
+// ---------- unit ----------
+function showUnit(key, tab) {
+  clearSessions();
+  const u = unitList().find(x => x.key === key);
+  if (!u) { app().innerHTML = topbar({ href: '#/', label: 'All units' }) + `<main class="wrap upage"><p class="empty">That unit isn't here.</p></main>`; return; }
+  const S = stats(), x = unitStats(key, S), e = examParts(u), K = encodeURIComponent(key);
+  const nDue = dueIds().filter(id => { const q = Store.all('questions')[id]; return q && unitKey(q.unit) === key; }).length;
+  const cur = t => tab === t ? ' aria-current="page"' : '', nEx = examsOf(key).length;
+  const cd = e ? (e.days > 0 ? `<div class="cd"><b>${e.days}</b><span>${e.days === 1 ? 'day' : 'days'} to exam</span><small>${esc(e.when)}</small></div>` : `<div class="cd"><span>${esc(daysTxt(e))}</span><small>${esc(e.when)}</small></div>`) : '<div class="cd"><span>No exam date yet</span></div>';
+  const acts = x.quizzes.length ? `<div class="acts"><a class="btn" href="#/s/weak/${K}">${icon('target')}Revise weak spots</a>${nDue ? `<a class="btn out" href="#/s/due/${K}">${icon('clock')}Due <span class="badge">${nDue}</span></a>` : ''}</div>` : '';
+  const head = `<section class="uhead u" ${uAttr(key)}><p class="code">${esc(u.unit)}</p><h1>${esc(u.name || u.unit)}</h1>
+    <div class="row">${cd}${acts}</div>
+    <nav class="tabs" aria-label="${esc(u.unit)} sections">
+      <a href="#/u/${K}"${cur('quizzes')}>${icon('list')}Quizzes<span class="ct">${x.quizzes.length}</span></a>
+      <a href="#/u/${K}/progress"${cur('progress')}>${icon('bars')}Progress<span class="ct">${x.tried}/${x.cs.length}</span></a>
+      <a href="#/u/${K}/exams"${cur('exams')}>${icon('exam')}Exams<span class="ct">${nEx}</span></a></nav></section>`;
+  const body = tab === 'progress' ? progressBody(u, x, S) : tab === 'exams' ? examsBody(u) : quizzesBody(u, x);
+  app().innerHTML = topbar({ href: '#/', label: 'All units' }) + `<main class="wrap">${head}<div class="upage">${body}</div></main>`;
+  if (tab === 'progress') wireWeeks(key);
+}
+function quizzesBody(u, x) {
+  if (!x.quizzes.length) return `<p class="empty">No quizzes yet. Ask Claude to quiz you on a ${esc(u.unit)} week and it will land here.</p>`;
+  return `<div class="list">${x.quizzes.sort((a, b) => a[1].created < b[1].created ? 1 : -1).map(([id, z]) => {
+    const lat = latestIn(id), pr = Store.get('progress/' + id) || {}, sk = new Set(pr.skipped || []);
+    const d = z.qids.filter(q => lat[q]), right = d.filter(q => lat[q].ok).length;
+    const label = !d.length ? 'Start' : d.length >= z.qids.length ? 'Review' : 'Continue';
+    const meta = d.length ? `<span class="n">${d.length} of ${z.qids.length}</span> answered · <span class="n">${right}</span> right` : `<span class="n">${z.qids.length}</span> questions`;
+    return `<div class="qrow"><div><h3>${esc(z.title)}</h3><div class="meta">${meta}</div></div>
+      <a class="btn ${d.length >= z.qids.length ? 'out ' : ''}sm" href="#/quiz/${encodeURIComponent(id)}" aria-label="${label} ${esc(z.title)}">${label}${icon('right')}</a>
+      <div class="cells" aria-hidden="true">${z.qids.map(q => `<i class="cell">${mark(markKind(lat[q], sk.has(q)))}</i>`).join('')}</div></div>`;
+  }).join('')}</div>`;
+}
+function progressBody(u, x, S) {
+  if (!x.cs.length) return '<p class="empty">No concepts yet. They appear once a quiz is added.</p>';
+  const weeks = {};
+  x.cs.forEach(([id, c]) => (weeks[wkNum(c.week)] = weeks[wkNum(c.week)] || []).push([id, c]));
+  const open = new Set(JSON.parse(ssGet('hub:open:' + u.key) || '[]'));
+  const blocks = Object.keys(weeks).map(Number).sort((a, b) => b - a).map(w => {
+    const items = weeks[w], t = items.filter(([id]) => S.con[id]), weak = t.filter(([id]) => S.con[id].m < 0.5).length;
+    const avg = t.length ? Math.round(100 * t.reduce((s, [id]) => s + S.con[id].m, 0) / t.length) : null;
+    const sub = `${items.length} ${items.length === 1 ? 'concept' : 'concepts'}${weak ? ` · ${weak} weak` : ''}`;
+    const rows = items.map(([id, c]) => {
+      const m = S.con[id], pc = m ? Math.round(m.m * 100) : null;
+      return `<a class="crow${m ? '' : ' untried'}" href="#/s/concept/${encodeURIComponent(id)}" aria-label="Practise ${esc(c.name)}"><span class="cname">${esc(c.name)}</span>
+        <span class="track" aria-hidden="true"><i style="width:${m ? Math.max(3, pc) : 0}%;background:${heat(m && m.m)}"></i></span>
+        <span class="pct">${m ? pc + '%' : '–'}</span>
+        <small>${m ? `<span class="n">${m.n}</span> ${m.n === 1 ? 'try' : 'tries'} · ${ago(m.last)}` : 'Not tried yet'}</small></a>`; }).join('');
+    return `<details class="wk" data-w="${w}"${open.has(w) ? ' open' : ''}><summary><span class="wn">Week ${w}<small>${sub}</small></span>${heatStrip(items, S, `${t.length} of ${items.length} practised`)}
+      <span class="avg${avg == null ? ' none' : ''}">${avg == null ? 'Not started' : avg + '%'}</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary><div class="wk-b">${rows}</div></details>`;
+  }).join('');
+  return `<div class="pv-sum"><p><span class="n">${x.tried} of ${x.cs.length}</span> concepts practised${x.weak ? ` · <span class="n">${x.weak}</span> need work` : ''}</p>
+    <div class="legend" aria-label="Colour key"><span><i style="background:var(--untried)"></i>Not tried</span><span><i style="background:var(--bad)"></i>Under 50%</span><span><i style="background:var(--shaky)"></i>50–80%</span><span><i style="background:var(--good)"></i>80%+</span></div></div>
+    <div class="weeks">${blocks}</div>`;
+}
+function wireWeeks(key) {
+  document.querySelectorAll('.wk').forEach(d => d.addEventListener('toggle', () => {
+    const open = [...document.querySelectorAll('.wk[open]')].map(x => +x.dataset.w);
+    ssSet('hub:open:' + key, JSON.stringify(open));
+  }));
+}
+
+// ---------- router ----------
+function parse() {
+  const h = decodeURIComponent((location.hash || '#/').slice(1)), p = h.split('/').filter(Boolean);
+  if (p[0] === 'quiz' && p[1]) return { kind: 'quiz', id: p.slice(1).join('/'), key: 'quiz/' + p.slice(1).join('/') };
+  if (p[0] === 's' && (p[1] === 'weak' || p[1] === 'due')) return { kind: p[1], unit: p[2] ? unitKey(p[2]) : '', key: p[1] + (p[2] ? '/' + unitKey(p[2]) : '') };
+  if (p[0] === 's' && p[1] === 'concept' && p[2]) return { kind: 'concept', id: p.slice(2).join('/'), key: 'concept/' + p.slice(2).join('/') };
+  if (p[0] === 'u' && p[1]) return { kind: 'unit', id: unitKey(p[1]), tab: p[2] === 'progress' || p[2] === 'exams' ? p[2] : 'quizzes' };
+  if (p[0] === 'exam' && p[1]) return { kind: 'exam', id: p[1], sid: p[2] === 'r' ? p[3] : null };
+  if (p[0] === 'progress') return { kind: 'progress' };
+  return { kind: 'home' };
+}
+function render() {
+  const r = parse(); window.scrollTo(0, 0); flagOpen = false; drawMark = false; palClose(false); exStop(); ex = null;
+  if (r.kind === 'progress') { // old link: send it to the first unit that has concepts
+    const S = stats(), u = unitList().find(x => unitStats(x.key, S).cs.length);
+    location.replace(u ? '#/u/' + encodeURIComponent(u.key) + '/progress' : '#/'); return;
+  }
+  if (r.kind === 'home') { run = null; showHome(); }
+  else if (r.kind === 'unit') { run = null; showUnit(r.id, r.tab); }
+  else if (r.kind === 'exam') { run = null; showExam(r.id, r.sid); return; }
+  else {
+    run = buildRun(r);
+    if (!run) { app().innerHTML = topbar({ href: '#/', label: 'Home' }) + `<main class="wrap upage"><p class="empty">That quiz isn't here any more.</p></main>`; return; }
+    quizShell(); if (!run.persistent) persist(); showQuiz(); return;
+  }
+  typeset(app());
+}
+
+(async function boot() {
+  $('#app').innerHTML = '<main class="wrap upage"><p class="empty">Loading…</p></main>';
+  await Store.init();
+  const dp = Store.get('prefs/ui');
+  if (dp && JSON.stringify(dp) !== JSON.stringify(PREFS)) { PREFS = JSON.parse(JSON.stringify(dp)); applyTheme(PREFS); lsSet('hub:prefs', JSON.stringify(PREFS)); }
+  try { importOld(); } catch (e) {}
+  window.addEventListener('hashchange', render);
+  render();
+  if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(() => typeset(app()));
+})();
+</script>
