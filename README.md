@@ -5,6 +5,12 @@ Exam-study skills for Monash students, shared within Monash Automation. Made by 
 - **ma-study-notes** reads a unit's Moodle page, the slides and worksheets on Google Drive, and Ed threads, then writes one notes file per week.
 - **ma-study-quiz** quizzes you on those notes in an interactive Study Hub, with rendered maths, links back to the lecture video and slide, spaced repetition and weak-spot revision.
 
+![Study Hub home: days to your next exam, weak-spot revision, and your units](docs/home.png)
+
+| Every answer explains itself and links to the lecture moment and slide | Progress by week and concept shows what needs work |
+|---|---|
+| ![A quiz question with feedback and links to the lecture video and slides](docs/quiz-feedback.png) | ![Progress view with mastery per concept](docs/progress.png) |
+
 ## Install
 
 1. Get the [Claude desktop app](https://claude.ai/download) and open the **Code** tab. (The Chat tab can't open Moodle or save notes.)
