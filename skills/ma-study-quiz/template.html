@@ -292,6 +292,12 @@ h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; font-family: var(
 .taught a { display: inline-flex; align-items: center; gap: 8px; width: fit-content; font-weight: 600; }
 .qnav { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; border-top: 1px dashed var(--line-2); padding-top: 16px; }
 .qnav span { display: flex; gap: 8px; flex-wrap: wrap; }
+.rep-kind { margin: 4px 0 12px; }
+.rep-note { font-size: .8125rem; margin: 8px 0 0; }
+.rep-list { list-style: none; padding: 0; margin: 14px 0 0; display: flex; flex-direction: column; gap: 6px; font-size: .875rem; border-top: 1px solid var(--line); padding-top: 12px; }
+.rep-list li { display: flex; gap: 8px; align-items: baseline; }
+.rep-list .t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rep-list .s { color: var(--ink-2); white-space: nowrap; }
 .flagbox { display: flex; flex-direction: column; gap: 8px; }
 .flagbox label { font-size: .9375rem; font-weight: 600; }
 .flagbox textarea { font: inherit; padding: 10px 12px; border: 1.5px solid var(--line-2); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); min-height: 76px; width: 100%; resize: vertical; }
@@ -384,6 +390,45 @@ h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; font-family: var(
 }
 #note { position: fixed; bottom: 12px; right: 12px; font-size: .8125rem; font-weight: 600; color: var(--bad); background: var(--surface); border: 1px solid var(--bad); border-radius: 999px; padding: 4px 12px; }
 #note[hidden] { display: none; }
+
+/* Claude in the hub: New dialog, request queue, Ask Claude */
+.mkd { max-width: 480px; }
+.mkf { display: flex; flex-direction: column; gap: 14px; }
+.mkf h2 { margin: 0; }
+.mkrow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border: 0; padding: 0; margin: 0; min-width: 0; }
+.mkrow.col { flex-direction: column; align-items: stretch; gap: 6px; }
+.mkrow legend, .mkrow .lbl { font-weight: 700; font-size: .9375rem; padding: 0; margin-bottom: 6px; }
+.mkrow .lbl { margin: 0; }
+.mkrow small, .small { color: var(--ink-3); font-weight: 500; font-size: .8125rem; }
+.wkchips { display: flex; flex-wrap: wrap; gap: 6px; }
+.wchip { font: inherit; font-weight: 700; font-size: .875rem; min-width: 40px; min-height: 36px; border-radius: 999px; border: 1.5px solid var(--line-2); background: var(--surface); color: var(--ink-2); cursor: pointer; font-variant-numeric: tabular-nums; }
+.wchip:hover { border-color: var(--acc); color: var(--acc-ink); }
+.wchip[aria-pressed="true"] { background: var(--acc); border-color: var(--acc); color: var(--on-acc); }
+.mkf textarea, .askf input { font: inherit; padding: 10px 12px; border: 1.5px solid var(--line-2); border-radius: var(--r-sm); background: var(--surface); color: var(--ink); width: 100%; resize: vertical; }
+.mkf textarea:focus, .askf input:focus { outline: 2px solid var(--acc); outline-offset: 1px; border-color: transparent; }
+.mkst:empty { display: none; }
+.mkst { font-size: .9375rem; color: var(--ink-2); }
+.mkd .qnav { padding-top: 0; }
+.linkb { font: inherit; font-size: .875rem; background: none; border: 0; padding: 0; color: var(--acc-ink); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; text-align: center; }
+.thinking::after { content: "…"; display: inline-block; width: 1.2em; text-align: left; animation: dots 1.2s steps(4, end) infinite; overflow: hidden; vertical-align: bottom; }
+@keyframes dots { 0% { width: 0 } 100% { width: 1.2em } }
+.reqs { border: 1.5px dashed var(--line-2); border-radius: var(--r); padding: 12px 16px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 6px; }
+.reqs > p { margin: 0; font-weight: 700; font-size: .875rem; color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
+.req { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: .9375rem; }
+.iconb { border: 0; background: none; color: var(--ink-3); cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display: inline-grid; place-items: center; flex: none; }
+.iconb:hover { background: var(--sunk); color: var(--ink); }
+.askw { margin-top: 4px; }
+.ask { display: flex; flex-direction: column; gap: 10px; border-top: 1px dashed var(--line-2); padding-top: 14px; }
+.msg { padding: 10px 14px; border-radius: 16px; max-width: 92%; overflow-x: auto; }
+.msg p { margin: 0 0 8px; } .msg p:last-child { margin: 0; }
+.msg.me { align-self: flex-end; background: var(--acc-soft); color: var(--acc-ink); border-bottom-right-radius: 6px; font-weight: 600; }
+.msg.cl { align-self: flex-start; background: var(--sunk); border-bottom-left-radius: 6px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip2 { font: inherit; font-size: .875rem; font-weight: 600; min-height: 34px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line-2); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+.chip2:hover { border-color: var(--acc); color: var(--acc-ink); }
+.askf { display: flex; gap: 8px; }
+.askf input { resize: none; min-height: 36px; padding: 6px 12px; border-radius: 999px; }
+.aerr { margin: 0; color: var(--bad); font-size: .875rem; }
 </style>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -399,6 +444,8 @@ h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; font-family: var(
   <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
   <symbol id="i-bars" viewBox="0 0 24 24"><path d="M5 20V12M10 20V5M15 20v-9M20 20V8"/></symbol>
   <symbol id="i-exam" viewBox="0 0 24 24"><path d="M7 3h10v18H7zM10 8h4M10 12h4M10 16h2"/><path d="M4 7v12M20 7v12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3c.6 4.2 2.8 6.4 7 7-4.2.6-6.4 2.8-7 7-.6-4.2-2.8-6.4-7-7 4.2-.6 6.4-2.8 7-7z"/><path d="M19 15.5c.2 1.5 1 2.3 2.5 2.5-1.5.2-2.3 1-2.5 2.5-.2-1.5-1-2.3-2.5-2.5 1.5-.2 2.3-1 2.5-2.5z"/></symbol>
 </svg>
 
 <div id="app"></div>
@@ -410,8 +457,8 @@ h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; font-family: var(
 // Backend: claude db when available, else localStorage ("hub:" prefix). All collections load once into memory; writes go through.
 window.HUB_SEED = window.HUB_SEED || null; // tests may set this before the script runs
 const SEED = {};
-const CONTENT = ['concepts', 'questions', 'quizzes', 'meta', 'exams'];
-const USER = ['attempts', 'srs', 'flags', 'progress', 'prefs', 'sittings'];
+const CONTENT = ['concepts', 'questions', 'quizzes', 'meta', 'exams', 'notes'];
+const USER = ['attempts', 'srs', 'flags', 'progress', 'prefs', 'sittings', 'requests', 'reports'];
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 // Question content is authored by Claude from scraped course material, so treat it as untrusted.
@@ -665,6 +712,7 @@ function topbar(back) {
   const us = unitList().slice(0, 2), dots = [`var(--acc)`].concat(us.map(u => dot(unitHue(u.key))));
   const left = back ? `<a class="crumb" href="${back.href}">${icon('left')}${esc(back.label)}</a>` : `<a class="brand" href="#/">${LOGO}<span class="wm">Study Hub</span></a>`;
   return `<header class="top"><div class="wrap">${left}<span class="sp"></span>
+    <button class="pal-btn" id="repb" title="Report a problem with the hub">${icon('flag')}<span class="lbl">Report</span></button>
     <button class="pal-btn" id="palb" aria-expanded="false" aria-controls="pal"><span class="dots" aria-hidden="true">${dots.map(c => `<i style="background:${c}"></i>`).join('')}</span><span class="lbl">Theme</span></button></div></header>`;
 }
 let palFonts = false;
@@ -720,8 +768,8 @@ function strip() {
 const mmss = t => Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
 function links(q, ok, lead) {
   const L = q.link || {}; const a = [];
-  if (L.v && UUID.test(String(L.v.id))) a.push(`<a href="https://monash.au.panopto.com/Panopto/Pages/Viewer.aspx?id=${encodeURIComponent(L.v.id)}&start=${Math.max(0, Math.floor(+L.v.t) || 0)}" target="_blank" rel="noopener noreferrer">${icon('play')}<span>${esc(L.v.title)} at ${mmss(Math.max(0, Math.floor(+L.v.t) || 0))}</span></a>`);
-  if (L.d && DRIVE.test(String(L.d.f))) a.push(`<a href="https://drive.google.com/file/d/${encodeURIComponent(L.d.f)}/view" target="_blank" rel="noopener noreferrer">${icon('doc')}<span>${esc(L.d.deck)} slides, p.${(Array.isArray(L.d.p) ? L.d.p : []).map(x => esc(x)).join(', ')}</span></a>`);
+  if (L.v) a.push(`<a href="https://monash.au.panopto.com/Panopto/Pages/Viewer.aspx?id=${L.v.id}&start=${L.v.t || 0}" target="_blank" rel="noopener">${icon('play')}<span>${L.v.title}${L.v.t ? ' at ' + mmss(L.v.t) : ''}</span></a>`);
+  if (L.d) a.push(`<a href="https://drive.google.com/file/d/${L.d.f}/view" target="_blank" rel="noopener">${icon('doc')}<span>${L.d.deck}${/slides|notes|worksheet|guide|sheet|exam|solution/i.test(L.d.deck) ? '' : ' slides'}${L.d.p && L.d.p.length ? ', p.' + L.d.p.join(', ') : ''}</span></a>`);
   if (!a.length) return '';
   const p = lead === false ? '' : `<p>${ok ? 'Where it was taught' : 'Go back to where it was taught'}</p>`;
   return `<div class="taught${ok ? '' : ' miss'}">${p}${a.join('')}</div>`;
@@ -789,7 +837,7 @@ function feedback() {
     else if (k === v) { b.classList.add('wrong'); b.insertAdjacentHTML('beforeend', mark('no')); } });
   else { $('#nin').value = v; $('#nin').disabled = true; const cb = c.querySelector('#nf .btn'); if (cb) cb.remove(); }
   const sure = ok ? `<div class="sure"><span>How sure were you?</span><span class="seg" role="group" aria-label="How sure were you?"><button data-s="1" aria-pressed="${r.sure === true}">Sure</button><button data-s="0" aria-pressed="${r.sure === false}">Guessed</button></span></div>` : '';
-  $('#fbw').innerHTML = `<div class="fb"><div class="verdict ${ok ? 'ok' : 'no'}">${ok ? 'Correct' : 'Not quite. The answer is ' + (q.o ? 'ABCD'[q.a] : `<span class="n">${esc(q.num)}</span>`)}</div><div>${H(q.e)}</div><div class="src">${H(q.s)}</div>${sure}${links(q, ok)}</div>`;
+  $('#fbw').innerHTML = `<div class="fb"><div class="verdict ${ok ? 'ok' : 'no'}">${ok ? 'Correct' : 'Not quite. The answer is ' + (q.o ? 'ABCD'[q.a] : `<span class="n">${q.num}</span>`)}</div><div>${q.e}</div><div class="src">${q.s}</div>${sure}${links(q, ok)}${askBtn(q.id)}</div>`;
   $('#fbw').querySelectorAll('[data-s]').forEach(b => b.onclick = () => {
     r.sure = b.dataset.s === '1'; Store.update('attempts/' + r.att, { sure: r.sure });
     if (r.fresh) srsApply(q.id, true, r.sure, r.prev);
@@ -797,6 +845,7 @@ function feedback() {
     $('#mkw').innerHTML = mark(markKind(r, false));
     strip(); feedback(); typeset($('#fbw'));
   });
+  wireAsk($('#fbw'), () => ({ pick: r.pick, ok: r.ok }));
   if (nextOpen() >= run.qids.length) $('#next').innerHTML = `See results${icon('right')}`;
 }
 
@@ -995,7 +1044,7 @@ function exReview(id, z, Q, sid, back) {
         : `<span class="timed"><input type="number" class="mkin" data-q="${esc(q.id)}" data-m="${m}" min="0" max="${m}" step="0.5" value="${sv != null ? +(sv * m).toFixed(1) : ''}" placeholder="–" aria-label="Mark Q${k + 1} out of ${m}"> / ${m}</span>`}</div>`;
     const open = cls !== 'ok';
     return `<details class="rev-q"${open ? ' open' : ''}><summary><b>Q${k + 1}</b><span class="wkt tag">${esc(q.w || '')}</span><span class="pts ${cls}">${got == null ? 'to mark' : `${got}/${m}`}</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
-      <div class="rb"><div class="q">${H(q.q)}</div>${ans}${q.e ? `<div>${H(q.e)}</div>` : ''}${q.s ? `<div class="src">${H(q.s)}</div>` : ''}${links(q, cls === 'ok')}</div></details>`;
+      <div class="rb"><div class="q">${q.q}</div>${ans}${q.e ? `<div>${q.e}</div>` : ''}${q.s ? `<div class="src">${q.s}</div>` : ''}${links(q, cls === 'ok')}${askBtn(q.id)}</div></details>`;
   };
   app().innerHTML = examShell(z, back, 'Results') + `<section class="sheet"><div class="body">
     ${s.timeUp ? '<p class="state" style="margin:0;color:var(--bad);font-weight:700">Time ran out, so the exam was handed in.</p>' : ''}
@@ -1014,12 +1063,13 @@ function exReview(id, z, Q, sid, back) {
   app().querySelectorAll('[data-v]').forEach(b => b.onclick = () => setSelf(b.dataset.q, +b.dataset.v));
   app().querySelectorAll('.mkin').forEach(n => n.onchange = () => { const m = +n.dataset.m, v = parseFloat(n.value);
     if (isNaN(v)) return; setSelf(n.dataset.q, Math.round(Math.max(0, Math.min(m, v)) * 2) / 2 / m); });
+  wireAsk(app(), q => { const a = s.ans[q.id]; return { pick: hasAns(a) ? a : null, ok: isAuto(q) ? hasAns(a) && isRight(q, a) : null }; });
   typeset(app());
 }
 
 function examsBody(u) {
   const xs = examsOf(u.key);
-  if (!xs.length) return `<p class="empty">No practice exams yet. Ask Claude for a practice exam on ${esc(u.unit)} and it will land here, timed or untimed, your choice.</p>`;
+  if (!xs.length) return `<p class="empty">No practice exams yet. Tap <b>New</b> above and pick <b>Practice exam</b>.</p>`;
   return `<div class="list">${xs.map(([id, z]) => {
     const ss = sitsOf(id), live = ss.find(([, s]) => !s.done), done = ss.filter(([, s]) => s.done);
     const best = done.map(([, s]) => exScore(z, s)).sort((a, b) => b.got - a.got)[0];
@@ -1085,7 +1135,7 @@ function showUnit(key, tab) {
   const nDue = dueIds().filter(id => { const q = Store.all('questions')[id]; return q && unitKey(q.unit) === key; }).length;
   const cur = t => tab === t ? ' aria-current="page"' : '', nEx = examsOf(key).length;
   const cd = e ? (e.days > 0 ? `<div class="cd"><b>${e.days}</b><span>${e.days === 1 ? 'day' : 'days'} to exam</span><small>${esc(e.when)}</small></div>` : `<div class="cd"><span>${esc(daysTxt(e))}</span><small>${esc(e.when)}</small></div>`) : '<div class="cd"><span>No exam date yet</span></div>';
-  const acts = x.quizzes.length ? `<div class="acts"><a class="btn" href="#/s/weak/${K}">${icon('target')}Revise weak spots</a>${nDue ? `<a class="btn out" href="#/s/due/${K}">${icon('clock')}Due <span class="badge">${nDue}</span></a>` : ''}</div>` : '';
+  const acts = `<div class="acts"><button class="btn" id="newb">${icon('plus')}New</button>${x.quizzes.length ? `<a class="btn out" href="#/s/weak/${K}">${icon('target')}Revise weak spots</a>` : ''}${nDue ? `<a class="btn out" href="#/s/due/${K}">${icon('clock')}Due <span class="badge">${nDue}</span></a>` : ''}</div>`;
   const head = `<section class="uhead u" ${uAttr(key)}><p class="code">${esc(u.unit)}</p><h1>${esc(u.name || u.unit)}</h1>
     <div class="row">${cd}${acts}</div>
     <nav class="tabs" aria-label="${esc(u.unit)} sections">
@@ -1093,11 +1143,12 @@ function showUnit(key, tab) {
       <a href="#/u/${K}/progress"${cur('progress')}>${icon('bars')}Progress<span class="ct">${x.tried}/${x.cs.length}</span></a>
       <a href="#/u/${K}/exams"${cur('exams')}>${icon('exam')}Exams<span class="ct">${nEx}</span></a></nav></section>`;
   const body = tab === 'progress' ? progressBody(u, x, S) : tab === 'exams' ? examsBody(u) : quizzesBody(u, x);
-  app().innerHTML = topbar({ href: '#/', label: 'All units' }) + `<main class="wrap">${head}<div class="upage">${body}</div></main>`;
+  app().innerHTML = topbar({ href: '#/', label: 'All units' }) + `<main class="wrap">${head}<div class="upage">${reqsBox(key)}${body}</div></main>`;
+  $('#newb').onclick = () => openNew(key); wireReqs();
   if (tab === 'progress') wireWeeks(key);
 }
 function quizzesBody(u, x) {
-  if (!x.quizzes.length) return `<p class="empty">No quizzes yet. Ask Claude to quiz you on a ${esc(u.unit)} week and it will land here.</p>`;
+  if (!x.quizzes.length) return `<p class="empty">No quizzes yet. Tap <b>New</b> above to make one from your notes.</p>`;
   return `<div class="list">${x.quizzes.sort((a, b) => a[1].created < b[1].created ? 1 : -1).map(([id, z]) => {
     const lat = latestIn(id), pr = Store.get('progress/' + id) || {}, sk = new Set(pr.skipped || []);
     const d = z.qids.filter(q => lat[q]), right = d.filter(q => lat[q].ok).length;
@@ -1175,4 +1226,342 @@ function render() {
   render();
   if (window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(() => typeset(app()));
 })();
+
+// ---------- Claude inside the hub: make quizzes and exams, ask about a question, queue requests for chat ----------
+let SAMPLE; // undefined while checking, null when this view can't ask Claude, else the sample function
+const sampleReady = (async () => { try { SAMPLE = (window.claude && claude.use) ? await claude.use('sample') : null; } catch (e) { SAMPLE = null; } return SAMPLE; })();
+const GONE = ['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'];
+function sErr(e) {
+  const c = e && e.code;
+  if (GONE.includes(c)) { SAMPLE = null; return 'Claude isn’t switched on for this page. You can still send the request to Claude in chat.'; }
+  return ({ rate_limited: 'Claude is busy or you’ve hit a usage limit. Try again in a bit.', session_expired: 'Sign in to Claude again, then retry.',
+    refused: 'Claude wouldn’t make that one. Try different wording.', invalid_json: 'Claude’s reply came back scrambled. Try again.',
+    prompt_too_large: 'That’s too much material at once. Pick fewer weeks.', empty_completion: 'Claude came back empty. Try again.', cancelled: '' })[c] ?? 'Something went wrong. Try again.';
+}
+const stripTags = h => { const t = document.createElement('template'); t.innerHTML = String(h || ''); return t.content.textContent.replace(/\s+/g, ' ').trim(); };
+const OKTAG = /^(P|B|STRONG|I|EM|CODE|PRE|UL|OL|LI|BR|SUB|SUP|SPAN|DIV|TABLE|THEAD|TBODY|TR|TH|TD|SMALL|A)$/;
+function clean(h) { // Claude's HTML is shown with innerHTML, so keep only plain formatting tags
+  const t = document.createElement('template'); t.innerHTML = String(h == null ? '' : h);
+  t.content.querySelectorAll('*').forEach(el => {
+    if (!el.isConnected && !t.content.contains(el)) return;
+    if (!OKTAG.test(el.tagName)) { el.replaceWith(document.createTextNode(el.textContent)); return; }
+    [...el.attributes].forEach(a => { if (!(el.tagName === 'A' && a.name === 'href' && /^https:\/\//.test(a.value))) el.removeAttribute(a.name); });
+    if (el.tagName === 'A') { el.target = '_blank'; el.rel = 'noopener'; }
+  });
+  return t.innerHTML;
+}
+// JSON eats single backslashes in LaTeX (\frac -> form feed + "rac"). Put them back.
+function fixTex(s) {
+  if (typeof s !== 'string') return s;
+  return s.replace(/\f/g, '\\f').replace(/\x08/g, '\\b').replace(/\t/g, '\\t').replace(/\r(?=[a-zA-Z])/g, '\\r').replace(/\v/g, '\\v')
+    .replace(/\n(?=(?:abla|eq|u|ot|orm|ewline|exists|leq|geq|mid|parallel|i)(?![a-zA-Z]))/g, '\\n');
+}
+const md = t => clean(esc(t).replace(/&lt;(\/?)(b|i|code|sub|sup)&gt;/g, '<$1$2>').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/`([^`]+)`/g, '<code>$1</code>')
+  .split(/\n{2,}/).map(p => '<p>' + p.replace(/\n/g, '<br>') + '</p>').join(''));
+
+const notesOf = key => Object.values(Store.all('notes')).filter(n => n && unitKey(n.unit) === key).sort((a, b) => a.week - b.week);
+function weeksOf(key) {
+  const w = new Set(notesOf(key).map(n => +n.week));
+  Object.values(Store.all('concepts')).forEach(c => { if (unitKey(c.unit) === key && wkNum(c.week)) w.add(wkNum(c.week)); });
+  return [...w].filter(Boolean).sort((a, b) => a - b);
+}
+// Lecture sources per week: slide text by page and video transcripts with times (collection "sources").
+// deck: {unit, week, kind:'deck', f, deck, pages:[text]}; video: {unit, week, kind:'video', id, title, dur, segs:[[t, text]]}
+const SRC = {}; // "key|week" -> {decks, videos}; loaded only while generating
+async function srcOf(key, w) {
+  const k = key + '|' + w; if (SRC[k]) return SRC[k];
+  let rows = [];
+  if (Store.db) { const unit = (notesOf(key).find(n => +n.week === +w) || {}).unit;
+    const r = await Store.db.collection('sources').where('unit', '==', unit).where('week', '==', +w).get(); rows = r.docs.filter(d => d.exists).map(d => d.data()); }
+  else rows = Object.values((window.HUB_SEED || {}).sources || {}).filter(x => unitKey(x.unit) === key && +x.week === +w);
+  const S = { decks: rows.filter(x => x.kind === 'deck' && x.f && (x.pages || []).length), videos: rows.filter(x => x.kind === 'video' && x.id && (x.segs || []).length) };
+  return SRC[k] = S;
+}
+const hasSrc = (key, w) => (notesOf(key).find(n => +n.week === +w) || {}).sources > 0; // notes doc keeps a count of its sources
+const srcWeeks = key => weeksOf(key).filter(w => hasSrc(key, w));
+function weakWeeks(key, n) { // weeks holding the weakest concepts; untried counts as fairly weak
+  const S = stats(), by = {};
+  Object.entries(Store.all('concepts')).forEach(([id, c]) => { if (unitKey(c.unit) !== key) return; const w = wkNum(c.week), m = S.con[id] ? S.con[id].m : 0.4; by[w] = Math.min(by[w] ?? 1, m); });
+  const ws = Object.keys(by).map(Number).sort((a, b) => by[a] - by[b]);
+  const ok = new Set(srcWeeks(key));
+  return (ws.length ? ws : weeksOf(key)).filter(w => ok.has(w)).slice(0, n);
+}
+
+// ----- the "+ New" dialog -----
+let mk = null, mkCtl = null;
+function mkDlg() { let d = $('#mkd'); if (!d) { document.body.insertAdjacentHTML('beforeend', '<dialog class="dlg mkd" id="mkd" aria-labelledby="mkd-t"></dialog>'); d = $('#mkd'); d.addEventListener('close', () => { if (mkCtl) mkCtl.abort(); }); } return d; }
+function openNew(key) {
+  const u = unitList().find(x => x.key === key); if (!u) return;
+  mk = { key, unit: u.unit, kind: 'quiz', weeks: new Set(), n: 10, min: 45, focus: '', busy: false, msg: '' };
+  const d = mkDlg(); drawNew(); d.showModal();
+}
+function drawNew() {
+  const d = mkDlg(), o = mk, ws = weeksOf(o.key), quiz = o.kind === 'quiz', canAsk = SAMPLE !== null;
+  const seg = (name, opts, cur) => `<span class="seg" role="group" aria-label="${name}">${opts.map(([v, l]) => `<button type="button" data-${name}="${v}" aria-pressed="${String(v) === String(cur)}">${l}</button>`).join('')}</span>`;
+  d.innerHTML = `<form method="dialog" class="mkf"><h2 id="mkd-t">New for ${esc(o.unit)}</h2>
+    <div class="mkrow">${seg('kind', [['quiz', 'Quiz'], ['exam', 'Practice exam']], o.kind)}</div>
+    ${ws.length ? `<fieldset class="mkrow"><legend>Weeks <small>${o.weeks.size ? '' : quiz ? '· none picked = your weak spots' : '· none picked = whole unit'}</small></legend>
+      <div class="wkchips">${ws.map(w => hasSrc(o.key, w) ? `<button type="button" class="wchip" data-wk="${w}" aria-pressed="${o.weeks.has(w)}">${w}</button>` : `<button type="button" class="wchip" disabled title="No slides or lecture transcripts stored for week ${w} yet">${w}</button>`).join('')}</div></fieldset>` : ''}
+    <div class="mkrow"><span class="lbl">${quiz ? 'Questions' : 'Length'}</span>${quiz ? seg('n', [[5, '5'], [10, '10'], [15, '15']], o.n) : seg('min', [[30, '30 min'], [45, '45 min'], [60, '60 min']], o.min)}</div>
+    <label class="mkrow col"><span class="lbl">Anything specific? <small>optional</small></span><textarea id="mkfocus" rows="2" placeholder="${quiz ? 'e.g. more maths, LSTM gates, harder questions' : 'e.g. like the real exam, focus on backprop'}">${esc(o.focus)}</textarea></label>
+    <div id="mkst" class="mkst" role="status">${o.msg}</div>
+    <div class="qnav">${o.busy ? `<button type="button" class="btn out" id="mkstop">Stop</button>`
+      : `<button type="button" class="btn out" id="mkx">Cancel</button>${canAsk ? `<button type="button" class="btn" id="mkgo">${icon('spark')}Make it</button>` : `<button type="button" class="btn" id="mkq">Send to Claude</button>`}`}</div>
+    ${!o.busy && canAsk ? `<button type="button" class="linkb" id="mkq">Or send it to Claude in chat instead</button>` : ''}
+    ${!canAsk && !o.busy ? '<p class="muted small">It will be waiting next time you open Claude chat.</p>' : ''}</form>`;
+  d.querySelectorAll('[data-kind]').forEach(b => b.onclick = () => { o.kind = b.dataset.kind; o.focus = $('#mkfocus').value; drawNew(); });
+  d.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { o.n = +b.dataset.n; o.focus = $('#mkfocus').value; drawNew(); });
+  d.querySelectorAll('[data-min]').forEach(b => b.onclick = () => { o.min = +b.dataset.min; o.focus = $('#mkfocus').value; drawNew(); });
+  d.querySelectorAll('[data-wk]').forEach(b => b.onclick = () => { const w = +b.dataset.wk; o.weeks.has(w) ? o.weeks.delete(w) : o.weeks.add(w); o.focus = $('#mkfocus').value; drawNew(); });
+  if ($('#mkx')) $('#mkx').onclick = () => d.close();
+  if ($('#mkstop')) $('#mkstop').onclick = () => mkCtl && mkCtl.abort();
+  if ($('#mkgo')) $('#mkgo').onclick = () => { o.focus = $('#mkfocus').value.trim(); generate(); };
+  if ($('#mkq')) $('#mkq').onclick = () => { o.focus = $('#mkfocus').value.trim(); queueReq(); };
+  $('#mkfocus').disabled = o.busy;
+}
+function queueReq() {
+  const o = mk, wk = [...o.weeks].sort((a, b) => a - b);
+  Store.add('requests', { unit: o.unit, kind: o.kind, weeks: wk, n: o.kind === 'quiz' ? o.n : null, minutes: o.kind === 'exam' ? o.min : null, focus: o.focus, at: new Date().toISOString(), status: 'queued' });
+  mkDlg().close(); render();
+}
+const reqLabel = r => `${r.kind === 'exam' ? `Practice exam, ${r.minutes} min` : `Quiz, ${r.n} questions`}${r.weeks && r.weeks.length ? ` · week${r.weeks.length > 1 ? 's' : ''} ${r.weeks.join(', ')}` : r.kind === 'exam' ? ' · whole unit' : ' · weak spots'}${r.focus ? ` · “${r.focus}”` : ''}`;
+function reqsBox(key) {
+  const rs = Object.entries(Store.all('requests')).filter(([, r]) => r && r.status === 'queued' && unitKey(r.unit) === key).sort((a, b) => a[1].at < b[1].at ? -1 : 1);
+  if (!rs.length) return '';
+  return `<div class="reqs"><p>${icon('clock')}Waiting for Claude in chat</p>${rs.map(([id, r]) => `<div class="req"><span>${esc(reqLabel(r))}</span><button class="iconb" data-rq="${esc(id)}" aria-label="Cancel request">${icon('x')}</button></div>`).join('')}</div>`;
+}
+function wireReqs() { document.querySelectorAll('[data-rq]').forEach(b => b.onclick = () => { Store.update('requests/' + b.dataset.rq, { status: 'cancelled' }); render(); }); }
+
+function genPrompt(o) {
+  const u = unitList().find(x => x.key === o.key) || {}, quiz = o.kind === 'quiz', S = stats();
+  let wk = [...o.weeks].sort((a, b) => a - b);
+  if (!wk.length) wk = quiz ? weakWeeks(o.key, 3) : srcWeeks(o.key);
+  const inWk = w => !wk.length || wk.includes(wkNum(w));
+  const cons = Object.entries(Store.all('concepts')).filter(([, c]) => unitKey(c.unit) === o.key && inWk(c.week));
+  const per = quiz ? 14000 : Math.max(5000, Math.floor(150000 / Math.max(1, wk.length)));
+  const notes = notesOf(o.key).filter(n => inWk(n.week)).map(n => `### Week ${n.week}: ${n.title || ''}\n${String(n.text || '').slice(0, per)}`).join('\n\n');
+  const seen = Object.values(Store.all('questions')).filter(q => unitKey(q.unit) === o.key && inWk(q.week)).slice(-60).map(q => '- ' + stripTags(q.q).slice(0, 120)).join('\n');
+  const conLines = cons.map(([id, c]) => `- ${id} | week ${wkNum(c.week)} | ${c.name} | ${S.con[id] ? Math.round(S.con[id].m * 100) + '% mastery' : 'not tried'}`).join('\n');
+  const marks = quiz ? '' : `\nIt is a ${o.min}-minute practice exam worth about ${o.min} marks in total (roughly 1 mark per minute). About a third of the marks are short multiple-choice or numeric questions (1–2 marks each); the rest are written worked problems (3–7 marks each) with a model answer and a marking guide. Order it like a real paper: short questions first.`;
+  return `You are writing ${quiz ? `a ${o.n}-question revision quiz` : 'a practice exam'} for a university student studying ${u.unit}${u.name ? ' (' + u.name + ')' : ''}.
+Weeks covered: ${wk.length ? wk.join(', ') : 'all'}.${o.weeks.size ? '' : quiz ? ' These weeks hold the student’s weakest concepts; weight questions toward concepts with low mastery or never tried.' : ''}
+${o.focus ? `The student asked for: ${o.focus}\n` : ''}${marks}
+Base every question on the course notes below. Test understanding and calculation, not trivia about dates or resources. Wrong options must be plausible mistakes a student would make, and as long, specific and confident as the right one: never let the right answer be the longest, most detailed or most hedged option. A student who only compares option lengths must not be able to guess. Do not repeat the questions the student already has.
+
+Existing concepts for these weeks (id | week | name | mastery):
+${conLines || '(none yet)'}
+
+Questions the student already has (do not repeat):
+${seen || '(none)'}
+
+COURSE NOTES
+${notes || '(No notes stored for these weeks. Use standard material for this unit and say "general knowledge" in each "s" field.)'}
+
+OUTPUT
+Reply with only one JSON object, no other text:
+{"title": "short title, e.g. Weeks 9–10: RNNs and attention",
+ "concepts": [{"id": "${o.key}-w9-short-slug", "name": "Concept name", "week": 9}],
+ "questions": [
+  {"week": 9, "concepts": ["concept id"], "q": "question", "o": ["option A", "option B", "option C", "option D"], "a": 0, "e": "why the answer is right and the others are wrong", "s": "Week 9 notes · section name"${quiz ? '' : ', "marks": 1'}},
+  {"week": 9, "concepts": ["concept id"], "q": "numeric question; state units and rounding", "num": 0.25, "tol": 0.005, "e": "worked solution", "s": "…"${quiz ? '' : ', "marks": 2'}}${quiz ? '' : `,
+  {"week": 9, "concepts": ["concept id"], "q": "written question with parts (a), (b) and their marks", "ans": "model answer with working, then a short marking guide", "e": "", "s": "…", "marks": 5}`}
+ ]}
+Rules:
+- "concepts" lists only NEW concepts you need. Reuse existing concept ids wherever one fits. New ids look like ${o.key}-w<week>-<short-slug>.
+- Every question has 1–2 concept ids.
+- ${quiz ? `Exactly ${o.n} questions, mostly multiple choice with 4 options ("a" is the 0-based index of the right one); up to a quarter may be numeric ("num" with a sensible "tol").` : 'Multiple choice has 4 options and "a" is the 0-based index. Numeric uses "num" and "tol". Written uses "ans".'}
+- Text may use <b>, <i>, <code>, <p>, <ul>, <li>, <br>. Maths uses \\\\( … \\\\) inline and \\\\[ … \\\\] for display. Never use $ for maths.
+- This is JSON, so every LaTeX backslash must be doubled: write "\\\\frac", "\\\\theta", "\\\\nabla", "\\\\(".`;
+}
+async function generate() {
+  const o = mk; if (o.busy) return;
+  const sample = SAMPLE === undefined ? await sampleReady : SAMPLE;
+  if (!sample) { o.msg = 'Claude isn’t switched on for this page. Send it to Claude in chat instead.'; return drawNew(); }
+  if (!srcWeeks(o.key).length) { o.msg = 'No slides or lecture transcripts are stored for this unit yet, so questions can’t be linked. Send it to Claude in chat instead.'; return drawNew(); }
+  o.busy = true; o.msg = '<span class="thinking">Claude is reading your notes</span>'; drawNew();
+  const ctl = mkCtl = new AbortController(), t0 = Date.now();
+  try {
+    const d = await sample.json(genPrompt(o), { signal: ctl.signal, modelTier: o.kind === 'exam' ? 'complex' : 'default', cache: false,
+      onText: ({ text }) => { const n = (text.match(/"q"\s*:/g) || []).length; const st = $('#mkst'); if (st) st.innerHTML = `<span class="thinking">Writing question ${Math.max(1, n)}${o.kind === 'quiz' ? ' of ' + o.n : ''}</span>`; } });
+    if (!d || !Array.isArray(d.questions)) throw new Error('Claude’s reply had no questions. Try again.');
+    await addLinks(o, d, ctl.signal);
+    const id = saveGen(o, d);
+    mk = null; mkDlg().close();
+    location.hash = o.kind === 'exam' ? '#/exam/' + encodeURIComponent(id) : '#/quiz/' + encodeURIComponent(id);
+  } catch (e) {
+    if (mk !== o) return;
+    o.busy = false; o.msg = e && e.code ? esc(sErr(e)) : esc((e && e.message) || 'Something went wrong. Try again.'); drawNew();
+  } finally { if (mkCtl === ctl) mkCtl = null; }
+}
+// Second pass: per week, Claude reads the slide pages and transcripts and gives each question its exact page and video time.
+function linkPrompt(u, w, S, items) {
+  const decks = S.decks.map(d => `=== slides "${d.deck}" | f = "${d.f}" | ${d.pages.length} pages ===\n` + d.pages.map((t, i) => `[p${i + 1}] ${String(t).slice(0, 1200)}`).join('\n')).join('\n\n');
+  const vids = S.videos.map(v => `=== video "${v.title}" | id = "${v.id}" ===\n` + v.segs.map(([t, x]) => `[${t}] ${x}`).join('\n')).join('\n\n');
+  return `You are linking practice questions for ${u} week ${w} to the exact place they were taught, so a student can jump straight there.
+
+QUESTIONS
+${items.map(([i, x]) => `${i}. ${stripTags(fixTex(x.q)).slice(0, 400)}\n   Answer: ${x.o ? stripTags(fixTex(String(x.o[x.a] ?? ''))).slice(0, 200) : x.num != null ? x.num : stripTags(fixTex(x.ans || '')).slice(0, 300)}`).join('\n')}
+
+SLIDES (page text)
+${decks}
+
+${S.videos.length ? `LECTURE VIDEOS (transcript; [n] = seconds from the start)\n${vids}` : ''}
+
+For every question, give the slide page(s) that show the idea the question tests (1–3 pages, the most specific ones)${S.videos.length ? ', and the lecture video moment where the lecturer starts explaining it (t = the [seconds] of that transcript line)' : ''}.
+Reply with only JSON: {"links": [{"i": 1, "f": "slide file id", "p": [12]${S.videos.length ? ', "v": "video id", "t": 300' : ''}}]}
+Use only the ids above. Every question number must appear once.`;
+}
+function checkLink(x, S) {
+  if (!x) return null;
+  const d = S.decks.find(k => k.f === x.f); if (!d) return null;
+  const p = (Array.isArray(x.p) ? x.p : [x.p]).map(n => parseInt(n, 10)).filter(n => n >= 1 && n <= d.pages.length).slice(0, 3);
+  if (!p.length) return null;
+  const out = { d: { f: d.f, deck: d.deck, p } };
+  if (S.videos.length) {
+    const v = S.videos.find(k => k.id === x.v), t = parseInt(x.t, 10);
+    if (!v || !(t >= 0) || t > (v.dur || v.segs[v.segs.length - 1][0]) + 60) return null;
+    out.v = { id: v.id, title: v.title, t };
+  }
+  return out;
+}
+async function addLinks(o, d, signal) {
+  const by = {};
+  d.questions.forEach(x => { if (x && typeof x.q === 'string') { const w = parseInt(x.week, 10) || 0; (by[w] = by[w] || []).push(x); } });
+  const weeks = Object.keys(by).map(Number).filter(w => hasSrc(o.key, w)), sample = SAMPLE;
+  for (const [k, w] of weeks.entries()) {
+    const S = await srcOf(o.key, w);
+    if (!S.decks.length) continue;
+    for (let tries = 0; tries < 2; tries++) {
+      const todo = by[w].filter(x => !x._link); if (!todo.length) break;
+      const st = $('#mkst'); if (st) st.innerHTML = `<span class="thinking">Finding slide pages and video times · week ${w}${weeks.length > 1 ? ` (${k + 1} of ${weeks.length})` : ''}</span>`;
+      const items = todo.map((x, i) => [i + 1, x]);
+      const r = await sample.json(linkPrompt(o.unit, w, S, items), { signal, modelTier: 'default', cache: false });
+      (r && Array.isArray(r.links) ? r.links : []).forEach(l => { const it = items.find(([i]) => i === parseInt(l && l.i, 10)); if (it && !it[1]._link) it[1]._link = checkLink(l, S); });
+    }
+  }
+}
+function saveGen(o, d) {
+  if (!d || !Array.isArray(d.questions)) throw new Error('Claude’s reply had no questions. Try again.');
+  const U = o.unit, key = o.key, base = `${key}-g${Date.now().toString(36)}`, quiz = o.kind === 'quiz', C = Store.all('concepts');
+  const slug = s => String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'c';
+  const newC = {}, order = {};
+  Object.values(C).forEach(c => { if (unitKey(c.unit) === key) order[wkNum(c.week)] = Math.max(order[wkNum(c.week)] ?? -1, c.order || 0); });
+  (Array.isArray(d.concepts) ? d.concepts : []).forEach(c => {
+    if (!c || !c.name) return; const w = parseInt(c.week, 10) || 0;
+    let id = String(c.id || ''); if (C[id]) return;
+    if (!new RegExp('^' + key + '-w\\d+-[a-z0-9-]+$').test(id)) id = `${key}-w${w}-${slug(c.name)}`;
+    if (C[id]) return; order[w] = (order[w] ?? -1) + 1;
+    newC[c.id || id] = id; Store.set('concepts/' + id, { unit: U, week: w, name: String(c.name).slice(0, 80), order: order[w], gen: true });
+  });
+  const qids = [], marks = {};
+  d.questions.forEach((x, k) => {
+    if (!x || typeof x.q !== 'string') return;
+    const w = parseInt(x.week, 10) || 0;
+    const cs = (Array.isArray(x.concepts) ? x.concepts : []).map(c => newC[c] || c).filter(c => Store.all('concepts')[c]).slice(0, 3);
+    const cn = cs.length ? Store.all('concepts')[cs[0]].name : '';
+    const link = x._link; if (!link) return;
+    const q = { unit: U, week: w, concepts: cs, w: `W${w}${cn ? ' · ' + cn : ''}`, q: clean(fixTex(x.q)), e: clean(fixTex(x.e || '')), s: esc(fixTex(x.s || `Week ${w} notes`)), gen: true };
+    if (link) q.link = link;
+    if (Array.isArray(x.o) && x.o.length >= 2) { const a = parseInt(x.a, 10); if (!(a >= 0 && a < x.o.length)) return; const ord = x.o.map((_, i) => i).sort(() => Math.random() - 0.5); q.o = ord.map(i => clean(fixTex(String(x.o[i])))); q.a = ord.indexOf(a); }
+    else if (x.num != null && isFinite(+x.num)) { q.num = +x.num; q.tol = isFinite(+x.tol) && +x.tol > 0 ? +x.tol : Math.max(Math.abs(q.num) * 0.01, 0.005); }
+    else if (!quiz && typeof x.ans === 'string' && x.ans.trim()) q.ans = clean(fixTex(x.ans));
+    else return;
+    const id = `${base}-q${String(k + 1).padStart(2, '0')}`;
+    Store.set('questions/' + id, q); qids.push(id);
+    if (!quiz) marks[id] = Math.max(1, Math.min(20, parseInt(x.marks, 10) || 1));
+  });
+  if (!qids.length) throw new Error('None of Claude’s questions could be matched to a slide page and video time. Try again.');
+  const title = String(d.title || (quiz ? 'Revision quiz' : 'Practice exam')).slice(0, 80), created = today();
+  if (quiz) Store.set('quizzes/' + base, { unit: U, title, created, qids, gen: true });
+  else Store.set('exams/' + base, { unit: U, title, created, minutes: o.min, qids, marks, intro: 'Written by Claude in the hub from your notes.', gen: true });
+  return base;
+}
+
+// ----- "Ask Claude" about one question -----
+const ASK = {}; // qid -> { turns: [], busy, err, ctl }
+function askBtn(qid) { return SAMPLE === null ? '' : `<div class="askw" data-ask="${esc(qid)}"></div>`; }
+function askCtx(q, ctx) {
+  const u = unitList().find(x => x.key === unitKey(q.unit)) || {};
+  const note = notesOf(unitKey(q.unit)).find(n => +n.week === wkNum(q.week));
+  let ans = '';
+  if (q.o) ans = `Options:\n${q.o.map((t, k) => `${'ABCD'[k]}. ${stripTags(t)}`).join('\n')}\nCorrect: ${'ABCD'[q.a]}\n`;
+  else if (q.num != null) ans = `Correct answer: ${q.num}\n`;
+  else if (q.ans) ans = `Model answer: ${stripTags(q.ans)}\n`;
+  const mine = ctx.pick == null || ctx.pick === '' ? 'No answer given.' : q.o ? `Picked ${'ABCD'[+ctx.pick]} (${ctx.ok ? 'right' : 'wrong'})` : `Answered: ${String(ctx.pick).slice(0, 1500)}${ctx.ok == null ? '' : ctx.ok ? ' (right)' : ' (wrong)'}`;
+  return `You are a patient tutor helping a university student revise ${u.unit || q.unit}${u.name ? ' (' + u.name + ')' : ''}. They are looking at one practice question and want help with it.
+Answer in under 150 words unless they ask for more. Plain language, short paragraphs. Maths with \\( … \\) inline or \\[ … \\] on its own line, never $. You may use **bold** and \`code\`. No headings.
+If they ask for a similar question, give one new question and stop. Wait for their answer before revealing the solution.
+
+QUESTION: ${stripTags(q.q)}
+${ans}Explanation they were shown: ${stripTags(q.e) || '(none)'}
+Student: ${mine}
+${note ? `\nTheir course notes for week ${note.week} (excerpt):\n${String(note.text || '').slice(0, 8000)}` : ''}`;
+}
+function drawAsk(w, q, ctx) {
+  const st = ASK[q.id] = ASK[q.id] || { turns: [], open: false }, wrong = ctx.ok === false;
+  if (!st.open) { w.innerHTML = `<button class="btn out sm askb">${icon('spark')}Ask Claude about this</button>`; w.querySelector('.askb').onclick = () => { st.open = true; drawAsk(w, q, ctx); w.querySelector('input') && w.querySelector('input').focus(); }; return; }
+  const chips = [wrong ? 'Why is my answer wrong?' : 'Why is this the answer?', 'Explain it more simply', 'Give me a similar one to try'];
+  w.innerHTML = `<div class="ask">${st.turns.map(t => `<div class="msg ${t.role === 'user' ? 'me' : 'cl'}">${t.role === 'user' ? esc(t.content) : md(t.content)}</div>`).join('')}
+    ${st.busy ? `<div class="msg cl live"><span class="thinking">Thinking</span></div>` : ''}${st.err ? `<p class="aerr">${esc(st.err)}</p>` : ''}
+    ${st.turns.length || st.busy ? '' : `<div class="chips">${chips.map(c => `<button class="chip2">${c}</button>`).join('')}</div>`}
+    <form class="askf"><input placeholder="${st.turns.length ? 'Ask a follow-up' : 'Or type your own question'}" aria-label="Ask Claude" ${st.busy ? 'disabled' : ''}>${st.busy ? `<button type="button" class="btn out sm" id="astop">Stop</button>` : `<button class="btn sm">Ask</button>`}</form></div>`;
+  w.querySelectorAll('.chip2').forEach(b => b.onclick = () => sendAsk(w, q, ctx, b.textContent));
+  w.querySelector('.askf').onsubmit = e => { e.preventDefault(); const v = w.querySelector('input').value.trim(); if (v) sendAsk(w, q, ctx, v); };
+  if (w.querySelector('#astop')) w.querySelector('#astop').onclick = () => st.ctl && st.ctl.abort();
+  typeset(w);
+}
+async function sendAsk(w, q, ctx, text) {
+  const st = ASK[q.id]; if (st.busy) return;
+  const sample = SAMPLE === undefined ? await sampleReady : SAMPLE;
+  if (!sample) { st.err = 'Claude isn’t switched on for this page.'; return drawAsk(w, q, ctx); }
+  st.turns.push({ role: 'user', content: text }); st.busy = true; st.err = ''; drawAsk(w, q, ctx);
+  const ctl = st.ctl = new AbortController(), turns = st.turns.slice(-12);
+  try {
+    const { text: out } = await sample([{ role: 'user', content: askCtx(q, ctx) }].concat(turns), { cache: false, signal: ctl.signal,
+      onText: ({ text: t }) => { const live = w.isConnected && w.querySelector('.live'); if (live) live.innerHTML = md(t); } });
+    st.turns.push({ role: 'assistant', content: out });
+  } catch (e) {
+    if (e && e.text) st.turns.push({ role: 'assistant', content: e.text + (e.code === 'cancelled' ? '' : ' …') });
+    else if (st.turns[st.turns.length - 1].role === 'user' && e && e.code === 'cancelled') st.turns.pop();
+    st.err = sErr(e);
+  }
+  st.busy = false; st.ctl = null;
+  const cur = document.querySelector(`[data-ask="${CSS.escape(q.id)}"]`); if (cur) drawAsk(cur, q, ctx);
+}
+function wireAsk(root, getCtx) {
+  (root || document).querySelectorAll('[data-ask]').forEach(w => { const q = Object.assign({ id: w.dataset.ask }, Store.get('questions/' + w.dataset.ask)); if (q.q) drawAsk(w, q, getCtx(q)); });
+}
+sampleReady.then(s => { if (s === null) document.querySelectorAll('[data-ask]').forEach(w => w.remove()); });
+
+// ---------- report a problem ----------
+// Reports go to the `reports` collection. Claude files queued ones as GitHub issues on the ma-study repo.
+const BUILD = 'hub-v11';
+const RECENT_ERR = [];
+const noteErr = m => { RECENT_ERR.push({ m: String(m).slice(0, 300), at: new Date().toISOString() }); if (RECENT_ERR.length > 5) RECENT_ERR.shift(); };
+window.addEventListener('error', e => noteErr((e.message || 'error') + (e.filename ? ` @${e.filename.split('/').pop()}:${e.lineno}` : '')));
+window.addEventListener('unhandledrejection', e => noteErr('rejection: ' + ((e.reason && (e.reason.message || e.reason.code)) || e.reason)));
+let repKind = 'bug';
+function repOpen() {
+  let d = $('#rdlg');
+  if (!d) { d = document.createElement('dialog'); d.className = 'dlg'; d.id = 'rdlg'; d.setAttribute('aria-labelledby', 'rdlg-t'); document.body.appendChild(d); }
+  repDraw(d, ''); d.showModal(); $('#rtx').focus();
+}
+function repDraw(d, sent) {
+  const mine = Object.entries(Store.all('reports')).sort((a, b) => (b[1].at || '').localeCompare(a[1].at || '')).slice(0, 5);
+  const list = mine.length ? `<ul class="rep-list">${mine.map(([, r]) => `<li><span class="t">${esc(r.text)}</span><span class="s">${r.issue ? `<a href="${esc(r.issue)}" target="_blank" rel="noopener">Issue #${esc(r.issue.split('/').pop())}</a>` : r.status === 'filed' ? 'Filed' : r.status === 'declined' ? 'Not posted' : r.status === 'held' ? 'Held' : 'Waiting for your OK'}</span></li>`).join('')}</ul>` : '';
+  d.innerHTML = `<h2 id="rdlg-t">Report a problem</h2>${sent ? `<p class="muted" style="margin:0 0 8px">${sent}</p>` : ''}
+    <span class="seg rep-kind" role="group" aria-label="Kind of report">${[['bug', 'Something’s wrong'], ['idea', 'Idea']].map(([v, l]) => `<button data-k="${v}" aria-pressed="${repKind === v}">${l}</button>`).join('')}</span>
+    <div class="flagbox"><label for="rtx">${repKind === 'bug' ? 'What went wrong?' : 'What would make the hub better?'}</label><textarea id="rtx" maxlength="4000" placeholder="${repKind === 'bug' ? 'What you did, what happened, what you expected' : 'Describe the idea'}"></textarea></div>
+    <p class="muted rep-note">Claude will check with you in chat before posting this as an issue on the public ma-study GitHub repo. Leave out personal details.</p>
+    <div class="qnav"><button class="btn out" id="rno">Close</button><button class="btn" id="rgo">Send</button></div>${list}`;
+  d.querySelectorAll('.rep-kind button').forEach(b => b.onclick = () => { const t = $('#rtx').value; repKind = b.dataset.k; repDraw(d, ''); $('#rtx').value = t; $('#rtx').focus(); });
+  $('#rno').onclick = () => d.close();
+  $('#rgo').onclick = () => {
+    const text = $('#rtx').value.trim(); if (!text) { $('#rtx').focus(); return; }
+    const q = typeof run !== 'undefined' && run && run.Q && run.Q[run.i];
+    Store.add('reports', { kind: repKind, text, route: location.hash || '#/', qid: q ? q.id : null, build: BUILD, ua: navigator.userAgent.slice(0, 200), errors: RECENT_ERR.slice(), at: new Date().toISOString(), status: 'queued' });
+    repDraw(d, 'Saved. Claude will ask you before posting it to GitHub.');
+  };
+}
+document.addEventListener('click', e => { if (e.target.closest('#repb')) repOpen(); });
 </script>
