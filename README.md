@@ -27,6 +27,10 @@ Exam-study skills for Monash students, shared within Monash Automation. Made by 
 
 Type `/ma-study`, or just say *"help me study for ECE4179"*. Claude opens Moodle for you to sign in, asks a couple of letter-answer questions, and builds the notes. Then say *"quiz me on weeks 7–9"*.
 
-You'll see approval prompts while it works. They're safe to approve: it only reads Moodle, Drive and Ed, and saves notes into your `University` folder.
+You'll see approval prompts while it works. Read each one before approving. They should only be about reading Moodle, Drive and Ed, and saving notes into your `University` folder. If one asks for anything else, say no. Avoid "always allow" for commands.
+
+Only install the plugin from this repo or a link a teammate sent you. It changes what Claude does on your computer.
+
+Course slides are sent to Claude to build your notes, and the quiz page is published to your private claude.ai Artifacts. Check Monash's rules on using AI tools with unit material before you share the page or the notes.
 
 Building a whole unit uses a fair share of your Claude usage. If it stops partway, ask again and it carries on from where it stopped.

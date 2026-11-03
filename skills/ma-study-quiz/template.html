@@ -11,7 +11,7 @@ window.MathJax = {
   startup: { typeset: false }
 };
 </script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js" integrity="sha384-KKWa9jJ1MZvssLeOoXG6FiOAZfAgmzsIIfw8BXwI9+kYm0lPCbC6yTQPBC00F1/L" crossorigin="anonymous"></script>
 <script>
 /* Themes: each preset is a colour family plus a type pairing. Every colour is derived in CSS from a few hues,
    so a preset is just numbers. Applied before first paint from localStorage; the db copy syncs devices. */
@@ -414,6 +414,19 @@ const CONTENT = ['concepts', 'questions', 'quizzes', 'meta', 'exams'];
 const USER = ['attempts', 'srs', 'flags', 'progress', 'prefs', 'sittings'];
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// Question content is authored by Claude from scraped course material, so treat it as untrusted.
+// H() keeps simple formatting tags (no attributes except class) and drops everything else: scripts, images, iframes, SVG, event handlers.
+const ALLOW = new Set(['B','I','EM','STRONG','U','SUB','SUP','BR','P','UL','OL','LI','CODE','PRE','SPAN','DIV','SMALL','BLOCKQUOTE','TABLE','THEAD','TBODY','TR','TH','TD']);
+const H = s => {
+  const t = document.createElement('template'); t.innerHTML = String(s == null ? '' : s);
+  (function walk(n) { Array.from(n.childNodes).forEach(c => {
+    if (c.nodeType === 3) return;
+    if (c.nodeType !== 1 || !ALLOW.has(c.tagName)) { c.remove(); return; }
+    Array.from(c.attributes).forEach(a => { if (a.name !== 'class') c.removeAttribute(a.name); });
+    walk(c); }); })(t.content);
+  return t.innerHTML;
+};
+const UUID = /^[0-9a-fA-F-]{8,40}$/, DRIVE = /^[A-Za-z0-9_-]{10,100}$/;
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } };
 const ssGet = k => { try { return sessionStorage.getItem(k); } catch (e) { return null; } };
@@ -707,8 +720,8 @@ function strip() {
 const mmss = t => Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
 function links(q, ok, lead) {
   const L = q.link || {}; const a = [];
-  if (L.v) a.push(`<a href="https://monash.au.panopto.com/Panopto/Pages/Viewer.aspx?id=${L.v.id}&start=${L.v.t}" target="_blank" rel="noopener">${icon('play')}<span>${L.v.title} at ${mmss(L.v.t)}</span></a>`);
-  if (L.d) a.push(`<a href="https://drive.google.com/file/d/${L.d.f}/view" target="_blank" rel="noopener">${icon('doc')}<span>${L.d.deck} slides, p.${L.d.p.join(', ')}</span></a>`);
+  if (L.v && UUID.test(String(L.v.id))) a.push(`<a href="https://monash.au.panopto.com/Panopto/Pages/Viewer.aspx?id=${encodeURIComponent(L.v.id)}&start=${Math.max(0, Math.floor(+L.v.t) || 0)}" target="_blank" rel="noopener noreferrer">${icon('play')}<span>${esc(L.v.title)} at ${mmss(Math.max(0, Math.floor(+L.v.t) || 0))}</span></a>`);
+  if (L.d && DRIVE.test(String(L.d.f))) a.push(`<a href="https://drive.google.com/file/d/${encodeURIComponent(L.d.f)}/view" target="_blank" rel="noopener noreferrer">${icon('doc')}<span>${esc(L.d.deck)} slides, p.${(Array.isArray(L.d.p) ? L.d.p : []).map(x => esc(x)).join(', ')}</span></a>`);
   if (!a.length) return '';
   const p = lead === false ? '' : `<p>${ok ? 'Where it was taught' : 'Go back to where it was taught'}</p>`;
   return `<div class="taught${ok ? '' : ' miss'}">${p}${a.join('')}</div>`;
@@ -729,11 +742,11 @@ function showQuiz() {
   if (!n) { c.innerHTML = `<div class="body"><p class="empty">${run.quiz.indexOf('due') === 0 ? 'Nothing is due today. Your next reviews will show up here.' : 'No questions here yet.'}</p><div><a class="btn out" href="#/">${icon('left')}Home</a></div></div>`; drawMark = false; return; }
   if (run.i >= n) return summary();
   const q = run.Q[run.i], i = run.i, r = run.res[q.id], mk = markKind(r, run.skipped.has(q.id));
-  const body = q.o ? `<div class="opts">${q.o.map((t, k) => `<button class="opt" id="o${k}" data-k="${k}"><span class="k">${'ABCD'[k]}</span><span>${t}</span></button>`).join('')}</div>`
+  const body = q.o ? `<div class="opts">${q.o.map((t, k) => `<button class="opt" id="o${k}" data-k="${k}"><span class="k">${'ABCD'[k]}</span><span>${H(t)}</span></button>`).join('')}</div>`
     : `<form class="numf" id="nf"><input id="nin" inputmode="decimal" aria-label="Your answer" placeholder="Your answer" autocomplete="off"><button class="btn" type="submit">Check</button></form>`;
   const flagged = Object.values(Store.all('flags')).some(f => f.qid === q.id && !f.resolved);
   c.innerHTML = `<div class="head"><span class="qn">Q${i + 1}</span><span class="wkt">${esc(q.w)}</span><span id="mkw">${mark(mk, drawMark)}</span></div>
-    <div class="body"><div class="q">${q.q}</div>${!r && run.skipped.has(q.id) ? '<div class="state">You skipped this one earlier.</div>' : ''}${body}<div id="fbw"></div>
+    <div class="body"><div class="q">${H(q.q)}</div>${!r && run.skipped.has(q.id) ? '<div class="state">You skipped this one earlier.</div>' : ''}${body}<div id="fbw"></div>
     <div class="qnav"><span><button class="btn out" id="prev" ${i === 0 ? 'disabled' : ''}>${icon('left')}Back</button><button class="btn out" id="flag" ${flagged ? 'disabled' : ''}>${icon('flag')}${flagged ? 'Flagged' : 'Flag'}</button></span>
     <span>${r ? '' : '<button class="btn out" id="skip">Skip</button>'}<button class="btn${r ? '' : ' out'}" id="next">${r ? 'Next question' : 'Next'}${icon('right')}</button></span></div>
     <div id="flagw"></div></div>`;
@@ -776,7 +789,7 @@ function feedback() {
     else if (k === v) { b.classList.add('wrong'); b.insertAdjacentHTML('beforeend', mark('no')); } });
   else { $('#nin').value = v; $('#nin').disabled = true; const cb = c.querySelector('#nf .btn'); if (cb) cb.remove(); }
   const sure = ok ? `<div class="sure"><span>How sure were you?</span><span class="seg" role="group" aria-label="How sure were you?"><button data-s="1" aria-pressed="${r.sure === true}">Sure</button><button data-s="0" aria-pressed="${r.sure === false}">Guessed</button></span></div>` : '';
-  $('#fbw').innerHTML = `<div class="fb"><div class="verdict ${ok ? 'ok' : 'no'}">${ok ? 'Correct' : 'Not quite. The answer is ' + (q.o ? 'ABCD'[q.a] : `<span class="n">${q.num}</span>`)}</div><div>${q.e}</div><div class="src">${q.s}</div>${sure}${links(q, ok)}</div>`;
+  $('#fbw').innerHTML = `<div class="fb"><div class="verdict ${ok ? 'ok' : 'no'}">${ok ? 'Correct' : 'Not quite. The answer is ' + (q.o ? 'ABCD'[q.a] : `<span class="n">${esc(q.num)}</span>`)}</div><div>${H(q.e)}</div><div class="src">${H(q.s)}</div>${sure}${links(q, ok)}</div>`;
   $('#fbw').querySelectorAll('[data-s]').forEach(b => b.onclick = () => {
     r.sure = b.dataset.s === '1'; Store.update('attempts/' + r.att, { sure: r.sure });
     if (r.fresh) srsApply(q.id, true, r.sure, r.prev);
@@ -791,7 +804,7 @@ function summary() {
   const c = $('#card'), n = run.qids.length, right = run.qids.filter(id => run.res[id] && run.res[id].ok).length;
   const miss = run.Q.map((q, k) => [q, k]).filter(([q]) => run.res[q.id] && !run.res[q.id].ok);
   const open = run.Q.map((q, k) => [q, k]).filter(([q]) => !run.res[q.id]);
-  const item = ([q, k]) => `<li><a href="#" class="jump" data-k="${k}">Q${k + 1}</a> <span class="muted">${esc(q.w)}</span><div>${q.q}</div>${links(q, true, false)}</li>`;
+  const item = ([q, k]) => `<li><a href="#" class="jump" data-k="${k}">Q${k + 1}</a> <span class="muted">${esc(q.w)}</span><div>${H(q.q)}</div>${links(q, true, false)}</li>`;
   const S = stats(), seen = new Set(); run.Q.forEach(q => (q.concepts || []).forEach(x => seen.add(x)));
   const weak = [...seen].filter(x => S.con[x] && S.con[x].m < 0.8).sort((a, b) => S.con[a].m - S.con[b].m).slice(0, 3).map(x => esc((Store.all('concepts')[x] || {}).name || x));
   c.innerHTML = `<div class="head"><span class="qn">Results</span></div><div class="body">
@@ -880,7 +893,7 @@ function exStart(id, z, Q, back) {
     return `<div class="sit"><span>${esc(shortDate(s.started))} · <b class="n">${r.got}/${r.total}</b>${r.pending ? ` <span class="muted">(${r.pending} to mark)</span>` : ''} · <span class="muted">${s.timed ? 'timed, ' : ''}${mins(new Date(s.finished) - new Date(s.started))}</span></span><a href="#/exam/${encodeURIComponent(id)}/r/${encodeURIComponent(sid)}">Review</a></div>`; }).join('');
   app().innerHTML = examShell(z, back, 'Practice exam') + `<section class="sheet"><div class="body exstart">
     <dl class="facts"><div><dt>Questions</dt><dd>${Q.length}</dd></div><div><dt>Marks</dt><dd>${exTotal(z)}</dd></div><div><dt>Suggested time</dt><dd>${M} min</dd></div></dl>
-    ${z.intro ? `<div>${z.intro}</div>` : ''}
+    ${z.intro ? `<div>${H(z.intro)}</div>` : ''}
     <p class="muted" style="margin:0">No answers are shown until you finish. ${nW ? `${nW} written ${nW === 1 ? 'question is' : 'questions are'} marked by you against a model answer at the end.` : ''}</p>
     <div class="timed"><span class="seg" role="group" aria-label="Timer"><button data-t="1" aria-pressed="true">Timed</button><button data-t="0" aria-pressed="false">No timer</button></span>
       <label id="tml"><input type="number" id="tmin" min="5" max="300" step="5" value="${M}" aria-label="Minutes"> minutes</label></div>
@@ -927,11 +940,11 @@ function exGo(k) { if (exPend) { exPend(); exPend = null; } exSave({ i: Math.max
 function exCard() {
   const s = ex.s, i = s.i || 0, q = ex.Q[i], c = $('#card'); if (!q) return;
   const a = s.ans[q.id], m = exMarks(ex.z, q.id), rev = (s.rev || []).includes(q.id), last = i === ex.Q.length - 1;
-  const body = q.o ? `<div class="opts">${q.o.map((t, k) => `<button class="opt${hasAns(a) && +a === k ? ' picked' : ''}" data-k="${k}" aria-pressed="${hasAns(a) && +a === k}"><span class="k">${'ABCD'[k]}</span><span>${t}</span></button>`).join('')}</div>`
+  const body = q.o ? `<div class="opts">${q.o.map((t, k) => `<button class="opt${hasAns(a) && +a === k ? ' picked' : ''}" data-k="${k}" aria-pressed="${hasAns(a) && +a === k}"><span class="k">${'ABCD'[k]}</span><span>${H(t)}</span></button>`).join('')}</div>`
     : q.num != null ? `<div class="numf"><input id="nin" inputmode="decimal" aria-label="Your answer" placeholder="Your answer" autocomplete="off" value="${hasAns(a) ? esc(String(a)) : ''}"></div>`
     : `<div class="wr"><textarea id="wtx" aria-label="Your answer" placeholder="Write your answer. Working counts.">${hasAns(a) ? esc(String(a)) : ''}</textarea></div>`;
   c.innerHTML = `<div class="head"><span class="qn">Q${i + 1}</span><span class="wkt">${esc(q.w || '')}</span><span class="tag" style="margin-left:auto">${m} ${m === 1 ? 'mark' : 'marks'}</span></div>
-    <div class="body"><div class="q">${q.q}</div>${body}
+    <div class="body"><div class="q">${H(q.q)}</div>${body}
     <div class="qnav"><span><button class="btn out" id="prev" ${i === 0 ? 'disabled' : ''}>${icon('left')}Back</button><button class="btn out" id="rev" aria-pressed="${rev}">${icon('flag')}${rev ? 'Marked for review' : 'Mark for review'}</button></span>
     <span>${hasAns(a) && q.o ? '<button class="btn out" id="clr">Clear</button>' : ''}${last ? `<button class="btn" id="fin2">Finish exam${icon('right')}</button>` : `<button class="btn" id="next">Next${icon('right')}</button>`}</span></div></div>`;
   $('#prev').onclick = () => exGo(i - 1);
@@ -974,15 +987,15 @@ function exReview(id, z, Q, sid, back) {
     const got = auto ? (hasAns(a) && isRight(q, a) ? m : 0) : sv != null ? m * sv : null;
     const cls = got == null ? '' : got >= m ? 'ok' : got > 0 ? 'part' : 'no';
     let ans = '';
-    if (q.o) ans = `<div class="opts">${q.o.map((t, j) => `<button class="opt${j === q.a ? ' right' : hasAns(a) && +a === j ? ' wrong' : ''}" disabled><span class="k">${'ABCD'[j]}</span><span>${t}</span>${j === q.a ? mark('ok') : hasAns(a) && +a === j ? mark('no') : ''}</button>`).join('')}</div>${hasAns(a) ? '' : '<p class="yours">You left this blank.</p>'}`;
-    else if (q.num != null) ans = `<p class="yours">Your answer: <b class="n">${hasAns(a) ? esc(String(a)) : 'blank'}</b> · Correct: <b class="n">${q.num}</b></p>`;
-    else ans = `<p class="yours" style="white-space:pre-wrap">${hasAns(a) ? esc(String(a)) : 'No typed answer. Mark your working on paper against this.'}</p><div class="model"><p>Model answer</p>${q.ans || ''}</div>
+    if (q.o) ans = `<div class="opts">${q.o.map((t, j) => `<button class="opt${j === q.a ? ' right' : hasAns(a) && +a === j ? ' wrong' : ''}" disabled><span class="k">${'ABCD'[j]}</span><span>${H(t)}</span>${j === q.a ? mark('ok') : hasAns(a) && +a === j ? mark('no') : ''}</button>`).join('')}</div>${hasAns(a) ? '' : '<p class="yours">You left this blank.</p>'}`;
+    else if (q.num != null) ans = `<p class="yours">Your answer: <b class="n">${hasAns(a) ? esc(String(a)) : 'blank'}</b> · Correct: <b class="n">${esc(q.num)}</b></p>`;
+    else ans = `<p class="yours" style="white-space:pre-wrap">${hasAns(a) ? esc(String(a)) : 'No typed answer. Mark your working on paper against this.'}</p><div class="model"><p>Model answer</p>${H(q.ans)}</div>
       <div class="sure"><span>Your mark${m > 1 ? ` (out of ${m})` : ''}</span>${m <= 2
         ? `<span class="seg" role="group" aria-label="Mark Q${k + 1}">${Array.from({ length: m * 2 + 1 }, (_, j) => m - j / 2).map(v => `<button data-q="${esc(q.id)}" data-v="${v / m}" aria-pressed="${sv != null && Math.abs(sv * m - v) < 1e-9}">${v}</button>`).join('')}</span>`
         : `<span class="timed"><input type="number" class="mkin" data-q="${esc(q.id)}" data-m="${m}" min="0" max="${m}" step="0.5" value="${sv != null ? +(sv * m).toFixed(1) : ''}" placeholder="–" aria-label="Mark Q${k + 1} out of ${m}"> / ${m}</span>`}</div>`;
     const open = cls !== 'ok';
     return `<details class="rev-q"${open ? ' open' : ''}><summary><b>Q${k + 1}</b><span class="wkt tag">${esc(q.w || '')}</span><span class="pts ${cls}">${got == null ? 'to mark' : `${got}/${m}`}</span><svg class="ic chev" aria-hidden="true"><use href="#i-down"/></svg></summary>
-      <div class="rb"><div class="q">${q.q}</div>${ans}${q.e ? `<div>${q.e}</div>` : ''}${q.s ? `<div class="src">${q.s}</div>` : ''}${links(q, cls === 'ok')}</div></details>`;
+      <div class="rb"><div class="q">${H(q.q)}</div>${ans}${q.e ? `<div>${H(q.e)}</div>` : ''}${q.s ? `<div class="src">${H(q.s)}</div>` : ''}${links(q, cls === 'ok')}</div></details>`;
   };
   app().innerHTML = examShell(z, back, 'Results') + `<section class="sheet"><div class="body">
     ${s.timeUp ? '<p class="state" style="margin:0;color:var(--bad);font-weight:700">Time ran out, so the exam was handed in.</p>' : ''}
