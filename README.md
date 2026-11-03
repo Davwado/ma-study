@@ -5,6 +5,10 @@ Exam-study skills for Monash students, shared within Monash Automation. Made by 
 - **ma-study-notes** reads a unit's Moodle page, the slides and worksheets on Google Drive, and Ed threads, then writes one notes file per week.
 - **ma-study-quiz** quizzes you on those notes in an interactive Study Hub, with rendered maths, links back to the lecture video and slide, spaced repetition and weak-spot revision.
 
+[![Launch video preview: answering a quiz question in the Study Hub. Click to watch the full 97-second video](docs/launch-preview.gif)](docs/ma-study-launch.mp4)
+
+▶️ [Watch the launch video](docs/ma-study-launch.mp4) (97 s, with sound)
+
 ![Study Hub home: days to your next exam, weak-spot revision, and your units](docs/home.png)
 
 | Every answer explains itself and links to the lecture moment and slide | Progress by week and concept shows what needs work |
